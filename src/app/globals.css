@@ -461,9 +461,11 @@ body.resizing { cursor: col-resize; user-select: none; }
   & .ring-group { transform-origin: 120px 120px; animation: settle 1.1s cubic-bezier(.2,.8,.2,1) both; }
   & .pie-group { transform-origin: 120px 120px; animation: settle 1.1s .12s cubic-bezier(.2,.8,.2,1) both; }
   & .pv-legend { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
-  & .pv-legend li { display: grid; grid-template-columns: 10px minmax(0,1fr) auto; gap: 10px; align-items: center; }
+  /* Name on the first line, amounts on a second line, so long amounts never collide with the name at any width. */
+  & .pv-legend li { display: grid; grid-template-columns: 10px minmax(0,1fr); column-gap: 10px; row-gap: 1px; align-items: center; min-width: 0; }
   & .pv-legend .sw { width: 10px; height: 10px; border-radius: 3px; }
-  & .pv-legend .amt { font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  & .pv-legend .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  & .pv-legend .amt { grid-column: 2; font-family: var(--font-mono); font-size: 12.5px; color: var(--muted); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
   & .pv-kpis { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
   & .pv-kpi { border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; background: var(--surface-2); min-width: 0; }
   & .pv-kpi span { display: block; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
@@ -522,6 +524,14 @@ body.resizing { cursor: col-resize; user-select: none; }
     & .steps { grid-template-columns: minmax(0,1fr); }
     & .closing { padding: 36px 20px; }
   }
+}
+/* Preview card lays out by its own width (it shrinks a lot next to the hero copy around 960–1100px):
+   when narrow, the chart sits on top and the legend flows into columns beneath it. */
+.pg-landing .preview { container-type: inline-size; }
+@container (max-width: 479px) {
+  .pg-landing .pv-body { grid-template-columns: minmax(0,1fr); gap: 16px; }
+  .pg-landing .pv-body svg { max-width: 200px; }
+  .pg-landing .pv-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 16px; }
 }
 @keyframes settle { from { transform: rotate(-40deg) scale(.94); } to { transform: none; } }
 

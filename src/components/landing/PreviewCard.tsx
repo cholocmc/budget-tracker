@@ -43,7 +43,7 @@ export function PreviewCard() {
           {DATA.map((d) => (
             <li key={d.name}>
               <span className="sw" style={{ background: d.color }} />
-              <span>{d.name}</span>
+              <span className="nm">{d.name}</span>
               <span className="amt">
                 {peso(d.a)} / {peso(d.b)}
               </span>
