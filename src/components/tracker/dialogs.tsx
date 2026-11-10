@@ -372,7 +372,10 @@ function DeleteCategoryDialog({ id }: { id: string }) {
       </div>
       <form className="form" onSubmit={submit} noValidate>
         <div className="field full">
-          <label htmlFor="del-confirm">Type {c.name} to confirm</label>
+          {/* Sentence case so the exact (case-sensitive) name to type is shown as-is. */}
+          <label htmlFor="del-confirm" className="as-typed">
+            Type <b>&ldquo;{c.name}&rdquo;</b> to confirm
+          </label>
           <input id="del-confirm" autoComplete="off" placeholder={c.name} value={typed} onChange={(e) => setTyped(e.target.value)} />
         </div>
         <div className="err field full" role="alert">{err}</div>
