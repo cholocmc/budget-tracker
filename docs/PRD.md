@@ -134,7 +134,7 @@ Routing rules:
 ### 4.4 Categories
 1. **Categories belong to the household and are shared across all months.** They are not per-tracker.
 2. **Name:** required, trimmed, at most 40 characters. It must be **unique within the household, ignoring case**. If it isn't, show: `"{name}" already exists. Pick a different name.`
-3. **Color:** one of a 10-color palette (§9.3). New categories default to the first palette color not already used.
+3. **Color:** one of a 16-color palette (§9.3). New categories default to the first palette color not already used.
 4. **Editing a category:**
    - Expenses reference categories by ID, so a rename or color change shows up on every expense in every month.
    - The edit dialog tells the user how many expenses will be affected.
@@ -699,7 +699,9 @@ Use one bold accent and keep everything else quiet.
 - Eyebrow labels are uppercase monospace at 11–12px with wide letter-spacing.
 
 ### 9.3 Category palette (works in both themes)
-`#22D88F`, `#16B8C9`, `#9BD93B`, `#7B6CF0`, `#F2B53C`, `#EF6F8E`, `#3FA7F5`, `#1F8F6A`, `#C97CF2`, `#F28A3C`
+`#22D88F`, `#16B8C9`, `#9BD93B`, `#7B6CF0`, `#F2B53C`, `#EF6F8E`, `#3FA7F5`, `#1F8F6A`, `#C97CF2`, `#F28A3C`, `#D9434F`, `#E35FC0`, `#F7A8C8`, `#3F51C8`, `#A65F30`, `#E8E05A`
+
+New categories take the first color not already in use, in this order. Member avatars use only the first 10, so their dark initials stay readable.
 
 ### 9.4 Responsiveness
 - Supported widths: from 360px phones up to wide desktops. The page must never scroll horizontally.

@@ -3,10 +3,21 @@ export const MONTHS = [
   "July", "August", "September", "October", "November", "December",
 ];
 
+/** Category colors (PRD §9.3). Must match the categories.color check constraint in the migrations. */
 export const PALETTE = [
   "#22D88F", "#16B8C9", "#9BD93B", "#7B6CF0", "#F2B53C",
   "#EF6F8E", "#3FA7F5", "#1F8F6A", "#C97CF2", "#F28A3C",
+  "#D9434F", "#E35FC0", "#F7A8C8", "#3F51C8", "#A65F30", "#E8E05A",
 ];
+
+/** Accessible names for the swatches, in PALETTE order. */
+export const PALETTE_NAMES = [
+  "Mint", "Teal", "Lime", "Violet", "Amber", "Pink", "Blue", "Forest", "Purple", "Orange",
+  "Crimson", "Magenta", "Blush", "Indigo", "Brown", "Yellow",
+];
+
+/** Avatar backgrounds: the original bright colors, which keep the dark initials readable. */
+const AVATAR_COLORS = PALETTE.slice(0, 10);
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -106,7 +117,8 @@ export const initials = (name: string) =>
     .join("")
     .slice(0, 2)
     .toUpperCase() || "?";
-export const memberColor = (index: number) => PALETTE[((index < 0 ? 0 : index) * 3 + 1) % PALETTE.length];
+export const memberColor = (index: number) =>
+  AVATAR_COLORS[((index < 0 ? 0 : index) * 3 + 1) % AVATAR_COLORS.length];
 
 export const plural = (n: number, one: string, many = one + "s") => `${n} ${n === 1 ? one : many}`;
 

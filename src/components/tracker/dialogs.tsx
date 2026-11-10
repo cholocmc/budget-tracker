@@ -5,6 +5,7 @@ import { IconCopy } from "@/components/Icons";
 import { Modal } from "@/components/Modal";
 import {
   PALETTE,
+  PALETTE_NAMES,
   centsToInput,
   fmtCents,
   fmtDue,
@@ -310,7 +311,7 @@ function CategoryDialog({ id }: { id?: string }) {
           <span className="label" id="cat-color-label">Color</span>
           <div className="swatches" role="group" aria-labelledby="cat-color-label">
             {PALETTE.map((c, i) => (
-              <button key={c} type="button" style={{ background: c }} aria-label={`Color ${i + 1}`} aria-pressed={c === color} onClick={() => setColor(c)} />
+              <button key={c} type="button" style={{ background: c }} aria-label={PALETTE_NAMES[i] ?? `Color ${i + 1}`} title={PALETTE_NAMES[i]} aria-pressed={c === color} onClick={() => setColor(c)} />
             ))}
           </div>
         </div>
