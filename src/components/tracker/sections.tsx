@@ -84,8 +84,9 @@ export function Header() {
 
 /* ---------- Month rail (PRD §6.3.2) ---------- */
 export function MonthRail() {
-  const { state, month, goMonth } = useTracker();
+  const { state, month, goMonth, tracker, expenses, open } = useTracker();
   const keys = state.trackers.map((t) => monthKey(t.year, t.month));
+  const hasCats = state.categories.length > 0;
   return (
     <section className="rail" aria-label="Month">
       <div className="month-nav">
@@ -116,6 +117,20 @@ export function MonthRail() {
           onChange={(e) => isMonthKey(e.target.value) && goMonth(e.target.value)}
         />
       </div>
+      {/* Second entry point to the expense dialog, so adding (the most common
+          action) doesn't need a scroll to the Expenses toolbar (PRD §6.3.6).
+          Same disabled rule as the toolbar button. */}
+      {tracker && expenses && (
+        <button
+          type="button"
+          className="btn primary rail-add"
+          disabled={!hasCats}
+          title={hasCats ? undefined : "Add a category first"}
+          onClick={() => open({ kind: "expense" })}
+        >
+          <IconPlus /> Add expense
+        </button>
+      )}
     </section>
   );
 }
