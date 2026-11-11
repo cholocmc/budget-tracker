@@ -2,12 +2,13 @@
 
 import { useEffect, useId, useRef, type ReactNode } from "react";
 import { createPortal } from "react-dom";
+import { IconClose } from "./Icons";
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /**
- * In-page dialog (PRD §9.5): role="dialog", aria-modal, Esc and backdrop close it,
+ * In-page dialog (PRD §9.5): role="dialog", aria-modal, a close (×) button, Esc, and backdrop close it,
  * focus is trapped inside and returns to the opener on close. Bottom sheet on phones (CSS).
  */
 export function Modal({
@@ -81,7 +82,12 @@ export function Modal({
       }}
     >
       <div ref={ref} className={`modal ${variant}`} role="dialog" aria-modal="true" aria-labelledby={titleId} tabIndex={-1}>
-        <h2 id={titleId}>{title}</h2>
+        <div className="modal-head">
+          <h2 id={titleId}>{title}</h2>
+          <button type="button" className="icon-btn modal-close" aria-label="Close" title="Close" onClick={onClose}>
+            <IconClose />
+          </button>
+        </div>
         {children}
       </div>
     </div>,

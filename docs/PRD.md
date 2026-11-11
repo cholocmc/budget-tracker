@@ -730,7 +730,7 @@ New categories take the first color not already in use, in this order. Member av
 - The chart layout uses a **container query** (see §6.3.5).
 
 ### 9.5 Accessibility
-- All dialogs are built in the page, never with `alert` or `confirm`. Each has `role="dialog"` and `aria-modal`. Esc and clicking the backdrop close them, and focus returns to the control that opened them.
+- All dialogs are built in the page, never with `alert` or `confirm`. Each has `role="dialog"` and `aria-modal`, and a close (×) button in its top-right corner (label "Close"). The × button, Esc, and clicking the backdrop all close them, and focus returns to the control that opened them.
 - Focus is always visible (a 2px accent outline).
 - Use `role="switch"`, `role="radiogroup"`, and `role="separator"` where described above, with the correct ARIA states.
 - Errors use `role="alert"`, and toasts use `role="status"`.

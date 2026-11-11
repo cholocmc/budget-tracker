@@ -155,6 +155,10 @@ svg.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-widt
 .modal { width: min(480px, 100%); max-height: calc(100dvh - 32px); overflow: auto; background: var(--surface); border: 1px solid var(--line-strong); border-radius: var(--r);
   box-shadow: var(--shadow); padding: 22px; display: flex; flex-direction: column; gap: 16px; }
 .modal h2 { font-size: 19px; overflow-wrap: anywhere; }
+.modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.modal-head h2 { min-width: 0; padding-top: 6px; }
+/* 40px touch target, pulled into the corner so it lines up with the dialog padding. */
+.modal-close { width: 40px; height: 40px; flex: none; margin: -6px -10px 0 0; }
 .modal p { margin: 0; color: var(--muted); }
 .modal.danger { border-color: var(--danger); }
 .modal.wide { width: min(580px, 100%); }

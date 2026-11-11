@@ -14,6 +14,7 @@ export const IconCopy = make(<><rect x="9" y="9" width="11" height="11" rx="2" /
 export const IconEdit = make(<><path d="M4 20h4L19 9l-4-4L4 16v4z" /><path d="M13.5 6.5l4 4" /></>);
 export const IconTrash = make(<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />);
 export const IconPlus = make(<path d="M12 5v14M5 12h14" />);
+export const IconClose = make(<path d="M6 6l12 12M18 6L6 18" />);
 export const IconUp = make(<path d="M6 15l6-6 6 6" />);
 export const IconDown = make(<path d="M6 9l6 6 6-6" />);
 export const IconSettings = make(
