@@ -395,7 +395,7 @@ function CategorySummary() {
     <div className="panel">
       <div className="panel-head">
         <h2>Category summary</h2>
-        <button type="button" className="btn" onClick={() => open({ kind: "category" })}>
+        <button type="button" className="btn primary" onClick={() => open({ kind: "category" })}>
           <IconPlus /> Add category
         </button>
       </div>
