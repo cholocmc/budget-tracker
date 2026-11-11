@@ -450,7 +450,8 @@ These are stored per browser in localStorage, not in Supabase:
 - Title "Copy expenses from {source Month Year}?". Subtitle: "Pick the recurring expenses to bring into {Month Year}. Due dates move to the same day this month."
 - A header line showing the number of categories and expenses, plus **Select all** and **Clear** links.
 - A scrollable list **grouped by category**:
-  - Each category row has a checkbox, its color swatch, its name, its expense count, and its budgeted total. The checkbox is **tri-state**: checked, unchecked, or indeterminate when only some of its expenses are selected.
+  - Each category row has a checkbox, its color swatch, its name, its expense count, and its budgeted total. The checkbox is **tri-state**: checked, unchecked, or indeterminate when only some of its expenses are selected. When only some are selected, the count reads "{selected} of {N}".
+  - Each category row ends with a **chevron button** that shows or hides its expenses. Categories start **collapsed**, unless there is only one category, which starts expanded.
   - Each expense row has a checkbox, its name, its budgeted amount, and its due date **as it will be in the new month**.
   - Everything is selected by default.
 - Checkbox **"Also copy actual amounts"**, **off by default**. Hint: "Leave this off to start each copied expense at ₱0.00 spent."

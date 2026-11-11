@@ -214,7 +214,11 @@ svg.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-widt
 .cp-group { border-top: 1px solid var(--line); }
 .cp-group:first-child { border-top: 0; }
 .cp-cat, .cp-item { display: grid; gap: 10px; align-items: center; padding: 9px 12px; cursor: pointer; }
-.cp-cat { grid-template-columns: auto auto minmax(0,1fr) auto; background: var(--surface-2); font-weight: 600; }
+.cp-head { display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; background: var(--surface-2); padding-right: 4px; }
+.cp-cat { grid-template-columns: auto auto minmax(0,1fr) auto; font-weight: 600; padding-right: 4px; }
+.cp-toggle { width: 40px; height: 40px; }
+.cp-toggle svg { transition: transform .15s; }
+.cp-toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 .cp-item { grid-template-columns: auto minmax(0,1fr) auto; padding-left: 36px; font-size: 14px; }
 .cp-item:hover { background: var(--accent-soft); }
 .cp-cat .nm, .cp-item .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

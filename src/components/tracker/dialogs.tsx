@@ -674,6 +674,14 @@ function CopyDialog({ source }: { source: CopySource }) {
   const all = useMemo(() => groups.flatMap((g) => g.expenses.map((x) => x.id)), [groups]);
   const [selected, setSelected] = useState<Set<string>>(() => new Set(all));
   const [withActual, setWithActual] = useState(false);
+  // Categories start collapsed so a long list is easy to scan; a lone category starts open.
+  const [expanded, setExpanded] = useState<Set<string>>(() => new Set(groups.length === 1 ? [groups[0].id] : []));
+  const toggleOpen = (id: string) =>
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (!next.delete(id)) next.add(id);
+      return next;
+    });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
   const total = all.length;
@@ -711,25 +719,41 @@ function CopyDialog({ source }: { source: CopySource }) {
         {groups.map((g) => {
           const ids = g.expenses.map((x) => x.id);
           const on = ids.filter((i) => selected.has(i)).length;
+          const isOpen = expanded.has(g.id);
           return (
             <div className="cp-group" key={g.id}>
-              <label className="cp-cat">
-                <TriStateBox checked={on === ids.length} indeterminate={on > 0 && on < ids.length} onChange={(v) => toggle(ids, v)} />
-                <span className="sw" style={{ background: g.color }} />
-                <span className="nm">{g.name}</span>
-                <span className="cp-meta">
-                  {ids.length} · {fmtCents(g.expenses.reduce((s, x) => s + Number(x.budgeted_cents), 0))}
-                </span>
-              </label>
-              {g.expenses.map((x) => (
-                <label className="cp-item" key={x.id}>
-                  <input type="checkbox" checked={selected.has(x.id)} onChange={(e) => toggle([x.id], e.target.checked)} />
-                  <span className="nm">{x.name}</span>
+              <div className="cp-head">
+                <label className="cp-cat">
+                  <TriStateBox checked={on === ids.length} indeterminate={on > 0 && on < ids.length} onChange={(v) => toggle(ids, v)} />
+                  <span className="sw" style={{ background: g.color }} />
+                  <span className="nm">{g.name}</span>
                   <span className="cp-meta">
-                    {fmtCents(Number(x.budgeted_cents))} · due {fmtDue(shiftDue(x.due_date, month))}
+                    {on > 0 && on < ids.length ? `${on} of ${ids.length}` : ids.length} ·{" "}
+                    {fmtCents(g.expenses.reduce((s, x) => s + Number(x.budgeted_cents), 0))}
                   </span>
                 </label>
-              ))}
+                <button
+                  type="button"
+                  className="icon-btn cp-toggle"
+                  aria-expanded={isOpen}
+                  aria-controls={`cp-items-${g.id}`}
+                  aria-label={`${isOpen ? "Hide" : "Show"} ${g.name} expenses`}
+                  onClick={() => toggleOpen(g.id)}
+                >
+                  <IconDown />
+                </button>
+              </div>
+              <div id={`cp-items-${g.id}`} hidden={!isOpen}>
+                {g.expenses.map((x) => (
+                  <label className="cp-item" key={x.id}>
+                    <input type="checkbox" checked={selected.has(x.id)} onChange={(e) => toggle([x.id], e.target.checked)} />
+                    <span className="nm">{x.name}</span>
+                    <span className="cp-meta">
+                      {fmtCents(Number(x.budgeted_cents))} · due {fmtDue(shiftDue(x.due_date, month))}
+                    </span>
+                  </label>
+                ))}
+              </div>
             </div>
           );
         })}
