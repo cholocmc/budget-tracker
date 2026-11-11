@@ -415,6 +415,9 @@ function ExpenseDialog({ id }: { id?: string }) {
     due: x.due_date,
   });
   const [f, setF] = useState(live ? fromRow(live) : defaults);
+  // Add only: copy Budgeted into Actual for expenses that are already paid in full.
+  const [sameAsBudget, setSameAsBudget] = useState(false);
+  const actualInput = sameAsBudget ? f.budget : f.actual;
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const saving = useCloseWhenDeleted(!id || !!live, id, "expense");
@@ -430,7 +433,7 @@ function ExpenseDialog({ id }: { id?: string }) {
     e.preventDefault();
     const name = f.name.trim();
     const budgeted_cents = inputToCents(f.budget);
-    const actual_cents = inputToCents(f.actual);
+    const actual_cents = inputToCents(actualInput);
     if (!name) return setErr("Enter a name for this expense.");
     if (!Number.isFinite(budgeted_cents) || budgeted_cents < 0 || !Number.isFinite(actual_cents) || actual_cents < 0)
       return setErr("Amounts must be zero or more.");
@@ -492,7 +495,22 @@ function ExpenseDialog({ id }: { id?: string }) {
         </div>
         <div className="field">
           <label htmlFor="e-actual">Actual</label>
-          <MoneyField id="e-actual" value={f.actual} onChange={(v) => set({ actual: v })} />
+          <MoneyField id="e-actual" value={actualInput} disabled={sameAsBudget} onChange={(v) => set({ actual: v })} />
+          {!id && (
+            <label className="check">
+              <input
+                type="checkbox"
+                checked={sameAsBudget}
+                onChange={(e) => {
+                  const on = e.target.checked;
+                  setSameAsBudget(on);
+                  // Turning it off keeps the mirrored amount so it can be adjusted from there.
+                  if (!on) set({ actual: f.budget });
+                }}
+              />{" "}
+              Same as budgeted
+            </label>
+          )}
         </div>
         <div className="field full">
           <label htmlFor="e-due">Due date</label>

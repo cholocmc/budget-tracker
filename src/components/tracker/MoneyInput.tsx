@@ -12,11 +12,13 @@ export function MoneyInput({
   value,
   onChange,
   invalid,
+  disabled,
 }: {
   id: string;
   value: string;
   onChange: (v: string) => void;
   invalid?: boolean;
+  disabled?: boolean;
 }) {
   const ref = useRef<HTMLInputElement>(null);
   const caret = useRef<number | null>(null);
@@ -40,6 +42,7 @@ export function MoneyInput({
         autoComplete="off"
         placeholder="0.00"
         value={value}
+        disabled={disabled}
         aria-invalid={invalid || undefined}
         onChange={(e) => {
           const raw = e.target.value;
