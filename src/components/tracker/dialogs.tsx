@@ -604,7 +604,8 @@ function ExpenseDialog({ id }: { id?: string }) {
     due: x.due_date,
   });
   const [f, setF] = useState(live ? fromRow(live) : defaults);
-  // Add only: copy Budgeted into Actual for expenses that are already paid in full.
+  // Copy Budgeted into Actual for expenses paid in full. Starts unchecked (also when editing),
+  // so opening an expense never changes its saved actual amount by itself.
   const [sameAsBudget, setSameAsBudget] = useState(false);
   const actualInput = sameAsBudget ? f.budget : f.actual;
   const [err, setErr] = useState("");
@@ -650,6 +651,7 @@ function ExpenseDialog({ id }: { id?: string }) {
             onClick={() => {
               setOriginal(live);
               setF(fromRow(live));
+              setSameAsBudget(false);
               setErr("");
             }}
           >
@@ -685,21 +687,19 @@ function ExpenseDialog({ id }: { id?: string }) {
         <div className="field">
           <label htmlFor="e-actual">Actual</label>
           <MoneyField id="e-actual" value={actualInput} disabled={sameAsBudget} onChange={(v) => set({ actual: v })} />
-          {!id && (
-            <label className="check">
-              <input
-                type="checkbox"
-                checked={sameAsBudget}
-                onChange={(e) => {
-                  const on = e.target.checked;
-                  setSameAsBudget(on);
-                  // Turning it off keeps the mirrored amount so it can be adjusted from there.
-                  if (!on) set({ actual: f.budget });
-                }}
-              />{" "}
-              Same as budgeted
-            </label>
-          )}
+          <label className="check">
+            <input
+              type="checkbox"
+              checked={sameAsBudget}
+              onChange={(e) => {
+                const on = e.target.checked;
+                setSameAsBudget(on);
+                // Turning it off keeps the mirrored amount so it can be adjusted from there.
+                if (!on) set({ actual: f.budget });
+              }}
+            />{" "}
+            Same as budgeted
+          </label>
         </div>
         <div className="field full">
           <label htmlFor="e-due">Due date</label>
