@@ -8,9 +8,34 @@ const sora = Sora({ subsets: ["latin"], weight: ["500", "600", "700"], variable:
 const plex = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-plex", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-jetbrains", display: "swap" });
 
+const TITLE = "Monthly Budget Tracker";
+const DESCRIPTION = "Plan every peso. Shared household budgeting with budget vs actual for every month.";
+
+// Absolute URLs for link previews (og:image etc.). Vercel sets the production
+// domain; locally it falls back to the dev server.
+const siteUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+  : "http://localhost:3000";
+
 export const metadata: Metadata = {
-  title: "Monthly Budget Tracker",
-  description: "Plan every peso. Shared household budgeting with budget vs actual for every month.",
+  metadataBase: new URL(siteUrl),
+  title: TITLE,
+  description: DESCRIPTION,
+  applicationName: TITLE,
+  // The image comes from src/app/opengraph-image.tsx.
+  openGraph: {
+    type: "website",
+    siteName: TITLE,
+    title: TITLE,
+    description: DESCRIPTION,
+    url: "/",
+    locale: "en_PH",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
