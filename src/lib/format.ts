@@ -73,6 +73,12 @@ export const fmtDue = (iso: string) => {
   const [, m, d] = iso.split("-").map(Number);
   return `${MONTHS[m - 1].slice(0, 3)} ${d}`;
 };
+/** A timestamptz as "Nov 15" in the user's local time (the Created column, PRD §6.3.6). */
+export const fmtCreated = (ts: string) => {
+  const d = new Date(ts);
+  if (!ts || Number.isNaN(d.getTime())) return "—";
+  return `${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}`;
+};
 /** The same day of month in another month, clamped to that month's last day. */
 export const shiftDue = (iso: string, targetMonth: string) => {
   const d = Math.min(parseInt(iso.slice(8, 10), 10) || 1, lastDayOf(targetMonth));

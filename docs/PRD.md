@@ -507,13 +507,13 @@ These are stored per browser in localStorage, not in Supabase:
   - **Add expense** (disabled when there are no categories).
   - On phones in table view, a **Sort** dropdown (see below).
 - **Table view:**
-  - Columns: Expense, Category, Owner (avatar plus "You" or the member's name), Due ("Nov 15"), Budgeted, Actual, Remaining, Status pill, and edit/delete actions.
-  - **Sortable columns:** Category, Owner, Due, Budgeted, Actual, Remaining.
+  - Columns: Expense, Category, Owner (avatar plus "You" or the member's name), Due ("Nov 15"), Created (the date the expense was added, in local time, "Nov 3"), Budgeted, Actual, Remaining, Status pill, and edit/delete actions.
+  - **Sortable columns:** Category, Owner, Due, Created, Budgeted, Actual, Remaining.
     - Clicking a header sorts by it; clicking the same header again reverses the order.
-    - The first click on a text or date column sorts ascending (A–Z, earliest first). The first click on a money column sorts **descending** (highest first).
+    - The first click on a text or due-date column sorts ascending (A–Z, earliest first). The first click on a money column sorts **descending** (highest first), and the first click on Created sorts **newest first**.
     - The active column is highlighted with an ↑ or ↓ arrow and has `aria-sort`.
     - Ties are broken by due date, ascending.
-    - The default is **Due date, ascending**.
+    - The default is **Created, newest first**.
   - **On phones**, the table becomes stacked cards with labeled rows, and the headers are hidden. Sorting moves to a dropdown in the toolbar with options like "Budgeted: highest first" and "Due date: earliest first".
 - **List view:**
   - Expenses are grouped by category. Each group header shows a swatch, the name, and "{actual} of {budgeted}".

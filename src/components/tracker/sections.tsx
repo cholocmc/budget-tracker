@@ -19,6 +19,7 @@ import { arcPath } from "@/lib/chart";
 import {
   fmtCents,
   fmtDue,
+  fmtCreated,
   initials,
   isMonthKey,
   memberColor,
@@ -470,11 +471,15 @@ const SORT_LABELS: Record<SortKey, string> = {
   category: "Category",
   owner: "Owner",
   due: "Due date",
+  created: "Created",
   budget: "Budgeted",
   actual: "Actual",
   remaining: "Remaining",
 };
+/** Keys whose first click sorts descending: money (highest first) and Created (newest first). */
 const MONEY_KEYS: SortKey[] = ["budget", "actual", "remaining"];
+const DESC_FIRST: SortKey[] = [...MONEY_KEYS, "created"];
+const createdMs = (x: Expense) => Date.parse(x.created_at) || 0;
 
 export function ExpensesSection() {
   const t = useTracker();
@@ -489,6 +494,7 @@ export function ExpensesSection() {
       category: (x) => (catOf(x.category_id)?.name ?? "").toLowerCase(),
       owner: (x) => ownerLabel(x.owner_id).toLowerCase(),
       due: (x) => x.due_date,
+      created: createdMs,
       budget: (x) => x.budgeted_cents,
       actual: (x) => x.actual_cents,
       remaining: (x) => x.budgeted_cents - x.actual_cents,
@@ -499,13 +505,13 @@ export function ExpensesSection() {
       const A = fn(a);
       const B = fn(b);
       const c = typeof A === "number" && typeof B === "number" ? A - B : String(A).localeCompare(String(B));
-      return c ? c * dir : a.due_date.localeCompare(b.due_date) || a.created_at.localeCompare(b.created_at);
+      return c ? c * dir : a.due_date.localeCompare(b.due_date) || createdMs(a) - createdMs(b);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [expenses, filterCat, sort, state.categories, ownerLabel]);
 
   const clickSort = (k: SortKey) =>
-    setSort(sort.key === k ? { key: k, dir: sort.dir === "asc" ? "desc" : "asc" } : { key: k, dir: MONEY_KEYS.includes(k) ? "desc" : "asc" });
+    setSort(sort.key === k ? { key: k, dir: sort.dir === "asc" ? "desc" : "asc" } : { key: k, dir: DESC_FIRST.includes(k) ? "desc" : "asc" });
 
   const owner = (id: string) => (
     <span className="owner">
@@ -565,6 +571,7 @@ export function ExpensesSection() {
               {th("category")}
               {th("owner")}
               {th("due")}
+              {th("created")}
               {th("budget", true)}
               {th("actual", true)}
               {th("remaining", true)}
@@ -587,6 +594,7 @@ export function ExpensesSection() {
                   </td>
                   <td data-label="Owner">{owner(x.owner_id)}</td>
                   <td className="mono" data-label="Due">{fmtDue(x.due_date)}</td>
+                  <td className="mono" data-label="Created">{fmtCreated(x.created_at)}</td>
                   <td className="num r" data-label="Budgeted">{fmtCents(x.budgeted_cents)}</td>
                   <td className="num r" data-label="Actual">{fmtCents(x.actual_cents)}</td>
                   <td className={`num r${rem < 0 ? " neg" : ""}`} data-label="Remaining">{fmtCents(rem)}</td>
@@ -680,7 +688,9 @@ export function ExpensesSection() {
                 const dt = k === "due";
                 const opts: ["asc" | "desc", string][] = num
                   ? [["desc", "highest first"], ["asc", "lowest first"]]
-                  : [["asc", dt ? "earliest first" : "A–Z"], ["desc", dt ? "latest first" : "Z–A"]];
+                  : k === "created"
+                    ? [["desc", "newest first"], ["asc", "oldest first"]]
+                    : [["asc", dt ? "earliest first" : "A–Z"], ["desc", dt ? "latest first" : "Z–A"]];
                 return opts.map(([d, txt]) => (
                   <option key={`${k}:${d}`} value={`${k}:${d}`}>
                     {SORT_LABELS[k]}: {txt}

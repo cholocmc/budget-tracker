@@ -72,7 +72,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
   const [screen, setScreen] = useState<Screen>({ kind: "app" });
   const [dialog, setDialog] = useState<DialogState | null>(null);
   const [filterCat, setFilterCat] = useState("all");
-  const [sort, setSort] = useState<Sort>({ key: "due", dir: "asc" });
+  const [sort, setSort] = useState<Sort>({ key: "created", dir: "desc" });
   const [view, setViewState] = useState<ViewMode>("table");
   const [split, setSplitState] = useState(SPLIT_DEFAULT);
   const [rows, setRowsState] = useState<RowId[]>(ROWS_DEFAULT);

@@ -4,7 +4,7 @@ import { createContext, useContext } from "react";
 import type { Category, CopySource, DeleteImpact, Expense, Tracker } from "@/lib/types";
 import type { TrackerState } from "./store";
 
-export type SortKey = "category" | "owner" | "due" | "budget" | "actual" | "remaining";
+export type SortKey = "category" | "owner" | "due" | "created" | "budget" | "actual" | "remaining";
 export type Sort = { key: SortKey; dir: "asc" | "desc" };
 export type ViewMode = "table" | "list";
 
