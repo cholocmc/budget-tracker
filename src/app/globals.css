@@ -413,9 +413,11 @@ body.resizing { cursor: col-resize; user-select: none; }
   .chart-wrap { grid-template-columns: minmax(0,1fr); }
   .chart-wrap svg { max-width: 210px; }
 
+  /* Phones: each dropdown gets its own full-width line so labels aren't cut off;
+     the Table/List toggle shares the last line with Add expense. */
   .toolbar { width: 100%; }
-  .toolbar .select { flex: 1; min-width: 0; }
-  .toolbar .btn.primary { width: 100%; justify-content: center; }
+  .toolbar .select { flex: 1 1 100%; min-width: 0; }
+  .toolbar .btn.primary { flex: 1 1 auto; min-width: 0; justify-content: center; }
   .sort-select { display: block; }
 
   /* Tables become stacked cards */
