@@ -126,5 +126,5 @@ Files in `src/components/tracker/`:
 
 ## Git
 
-- Branch off `main` for changes. Don't commit or push unless asked.
+- Commit directly to `main`. Don't commit or push unless asked.
 - Commit messages: imperative subject, then a short body explaining what changed and why.
