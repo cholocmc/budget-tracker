@@ -31,7 +31,8 @@ export type DialogState =
   | { kind: "expense"; id?: string }
   | { kind: "deleteExpense"; id: string }
   | { kind: "copy"; source: CopySource }
-  | { kind: "settings" };
+  | { kind: "settings" }
+  | { kind: "deleteTracker"; id: string };
 
 export interface ExpenseInput {
   name: string;
@@ -54,6 +55,7 @@ export interface Ops {
   saveExpense(input: ExpenseInput, original?: Expense): Promise<string | null>;
   deleteExpense(expense: Expense): Promise<string | null>;
   startCreateTracker(): Promise<void>;
+  deleteTracker(tracker: Tracker): Promise<string | null>;
   createTracker(ids: string[], includeActual: boolean): Promise<string | null>;
 }
 

@@ -67,7 +67,7 @@ Files in `src/components/tracker/`:
 - **Multi-step or sensitive writes go through RPCs** (`security definer`, `set search_path`), and each checks `auth.uid()` itself. These include:
   - household create, join, and leave
   - code reset
-  - tracker creation
+  - tracker creation and deletion
 
   Simple CRUD on categories and expenses goes straight to the tables.
 - **RPCs raise stable error codes** (`raise exception 'ALREADY_IN_HOUSEHOLD'`). Add each new code and its message to `src/lib/errors.ts`.
@@ -105,7 +105,6 @@ Files in `src/components/tracker/`:
   - transferring ownership
   - deleting a household
   - removing members
-  - deleting trackers
 - **No prototype scaffolding** (PRD §10): no sample data, no "view as" switcher, and no fake delays.
 - **localStorage** holds only UI preferences: theme (`finance-tracker-theme`), view, split width, and section order (`finance-tracker-rows`). Wrap every access in `try/catch`.
 

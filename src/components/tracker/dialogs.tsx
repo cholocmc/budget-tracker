@@ -46,12 +46,83 @@ export function Dialogs({ dialog }: { dialog: DialogState }) {
       return <CopyDialog source={dialog.source} />;
     case "settings":
       return <SettingsDialog />;
+    case "deleteTracker":
+      return <DeleteTrackerDialog id={dialog.id} />;
   }
+}
+
+/* ---------- Delete a month's tracker (PRD §4.3) ---------- */
+function DeleteTrackerDialog({ id }: { id: string }) {
+  const { state, ops, close } = useTracker();
+  const live = state.trackers.find((t) => t.id === id);
+  const snapshot = useRef(live);
+  if (live) snapshot.current = live;
+  // Counted when the dialog opens; the month is loaded because the button only shows for the viewed month.
+  const [impact] = useState(() => {
+    const list = state.expenses[id] ?? [];
+    return {
+      n: list.length,
+      budgeted: list.reduce((s, x) => s + Number(x.budgeted_cents), 0),
+      actual: list.reduce((s, x) => s + Number(x.actual_cents), 0),
+    };
+  });
+  const [typed, setTyped] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const t = snapshot.current;
+  if (!t) return null;
+  const label = monthLabel(monthKey(t.year, t.month));
+  const ok = typed.trim().toLowerCase() === label.toLowerCase();
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!ok || busy) return;
+    setBusy(true);
+    const error = await ops.deleteTracker(t);
+    if (error) {
+      setBusy(false);
+      setErr(error);
+      return;
+    }
+    close();
+  };
+
+  return (
+    <Modal title={`Delete the ${label} tracker?`} onClose={close} variant="danger" initialFocus="#dt-confirm">
+      <div className="warn-box">
+        <strong>This can&apos;t be undone.</strong>{" "}
+        {impact.n ? (
+          <>
+            It deletes all <b>{impact.n}</b> expense{impact.n === 1 ? "" : "s"} in {label} ({fmtCents(impact.budgeted)} budgeted,{" "}
+            {fmtCents(impact.actual)} spent) for everyone in the household.
+          </>
+        ) : (
+          <>{label} has no expenses, but the month will be removed for everyone in the household.</>
+        )}{" "}
+        Categories and other months stay. You can create {label} again afterwards, empty or copied from an earlier month.
+      </div>
+      <form className="form" onSubmit={submit} noValidate>
+        <div className="field full">
+          <label htmlFor="dt-confirm" className="as-typed">
+            Type <b>&ldquo;{label}&rdquo;</b> to confirm
+          </label>
+          <input id="dt-confirm" autoComplete="off" placeholder={label} value={typed} onChange={(e) => { setTyped(e.target.value); setErr(""); }} />
+        </div>
+        <div className="err field full" role="alert">{err}</div>
+        <div className="modal-actions field full">
+          <button type="button" className="btn ghost" onClick={close}>Keep tracker</button>
+          <button type="submit" className="btn danger" disabled={!ok || busy}>
+            {busy ? "Deleting…" : "Delete tracker"}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
 }
 
 /* ---------- Settings: section order (saved per device) ---------- */
 function SettingsDialog() {
-  const { rows, setRows, close } = useTracker();
+  const { rows, setRows, close, open, tracker, expenses, month } = useTracker();
   const [draft, setDraft] = useState<RowId[]>(rows);
   const [announce, setAnnounce] = useState("");
   const listRef = useRef<HTMLOListElement>(null);
@@ -122,6 +193,20 @@ function SettingsDialog() {
         ))}
       </ol>
       <div className="sr-only" aria-live="polite">{announce}</div>
+      {tracker && expenses && (
+        <div className="eyebrow">This month</div>
+      )}
+      {tracker && expenses && (
+        <div className="leave-box">
+          <div>
+            <b>Delete the {monthLabel(month)} tracker</b>
+            <p>Removes this month and its expenses for everyone, so you can start it again.</p>
+          </div>
+          <button type="button" className="btn danger-outline" onClick={() => open({ kind: "deleteTracker", id: tracker.id })}>
+            Delete tracker
+          </button>
+        </div>
+      )}
       <div className="modal-actions">
         <button
           type="button"

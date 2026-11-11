@@ -274,6 +274,20 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
     ch.on("postgres_changes", { event: "INSERT", ...filtered("trackers") }, ({ new: row }) => {
       dispatch({ type: "upsertTracker", tracker: row as unknown as Tracker });
     });
+    // Tracker deleted by another member (its expenses cascade; their DELETE events are no-ops after this).
+    ch.on("postgres_changes", { event: "DELETE", schema: "public", table: "trackers" }, ({ old }) => {
+      const id = old?.id as string | undefined;
+      const t = id ? stateRef.current.trackers.find((x) => x.id === id) : undefined;
+      if (!t) return; // Ours (already removed) or another household's.
+      const label = monthLabel(monthKey(t.year, t.month));
+      const viewing = trackerFor(monthRef.current)?.id === t.id;
+      // Close dialogs about this month's data so they don't each toast separately.
+      if (viewing) setDialog((d) => (d && (d.kind === "expense" || d.kind === "deleteExpense" || d.kind === "deleteTracker") ? null : d));
+      dispatch({ type: "removeTracker", id: t.id });
+      const who = deletedByRef.current.get(t.id);
+      const name = who ? stateRef.current.members.find((m) => m.user_id === who)?.display_name : null;
+      toast(`The ${label} tracker was deleted by ${name ?? "another member"}`);
+    });
 
     // Household
     ch.on("postgres_changes", { event: "UPDATE", ...filtered("households", "id") }, ({ new: row }) => {
@@ -540,6 +554,24 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
           const err = await ops.createTracker([], false);
           if (err) toast(err);
         }
+      },
+
+      async deleteTracker(t) {
+        const label = monthLabel(monthKey(t.year, t.month));
+        const cached = stateRef.current.expenses[t.id];
+        announceDelete("trackers", t.id);
+        dispatch({ type: "removeTracker", id: t.id });
+        const { data, error } = await sb.rpc("delete_tracker", { p_tracker_id: t.id });
+        if (error) {
+          deletedByRef.current.delete(t.id);
+          if (errorCode(error) === "TRACKER_NOT_FOUND") return null; // Someone else already deleted it.
+          dispatch({ type: "upsertTracker", tracker: t });
+          if (cached) dispatch({ type: "setExpenses", trackerId: t.id, expenses: cached });
+          return errorMessage(error, "Couldn't delete the tracker. Try again.");
+        }
+        const n = Number(data?.expense_count ?? 0);
+        toast(n ? `Deleted the ${label} tracker and ${plural(n, "expense")}` : `Deleted the ${label} tracker`);
+        return null;
       },
 
       async createTracker(ids, includeActual) {

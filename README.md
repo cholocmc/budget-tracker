@@ -21,7 +21,7 @@ npx supabase link --project-ref YOUR-PROJECT-REF
 npx supabase db push
 ```
 
-Or paste `supabase/migrations/20261110000000_init.sql` into **SQL Editor** and run it.
+Or paste each file in `supabase/migrations/` into **SQL Editor** and run them in filename order, starting with `20261110000000_init.sql`. When new migrations are added later, run only the new ones.
 
 ### 3. Set up Google sign-in
 

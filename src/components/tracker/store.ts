@@ -16,6 +16,7 @@ export type Action =
   | { type: "upsertCategory"; category: Category }
   | { type: "removeCategory"; id: string }
   | { type: "upsertTracker"; tracker: Tracker }
+  | { type: "removeTracker"; id: string }
   | { type: "setExpenses"; trackerId: string; expenses: Expense[] }
   | { type: "upsertExpense"; expense: Expense; force?: boolean }
   | { type: "removeExpense"; id: string }
@@ -48,6 +49,11 @@ export function reducer(state: TrackerState, action: Action): TrackerState {
     case "upsertTracker": {
       if (state.trackers.some((t) => t.id === action.tracker.id)) return state;
       return { ...state, trackers: [...state.trackers, action.tracker].sort(byMonth) };
+    }
+    case "removeTracker": {
+      if (!state.trackers.some((t) => t.id === action.id)) return state;
+      const { [action.id]: _gone, ...expenses } = state.expenses;
+      return { ...state, trackers: state.trackers.filter((t) => t.id !== action.id), expenses };
     }
     case "setExpenses":
       return { ...state, expenses: { ...state.expenses, [action.trackerId]: action.expenses } };

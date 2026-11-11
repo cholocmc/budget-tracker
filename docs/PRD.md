@@ -28,7 +28,6 @@ Users sign in with Google. Each user belongs to exactly one household. They eith
 - Transferring ownership of a household.
 - Deleting a household.
 - Removing another member from a household. Members can only leave on their own.
-- Deleting a monthly tracker. Its expenses can be deleted one by one.
 - Expiring household codes, or limiting how many times a code can be used.
 
 ### 1.3 Tech stack
@@ -129,7 +128,7 @@ Routing rules:
    - If there is no such month, the tracker is created immediately with no dialog.
    - If there is one, the copy dialog opens. Its behaviour is in §6.3.4.
 5. Trackers can be navigated with previous/next arrows, a month picker, and chips for months that already have trackers.
-6. **Trackers cannot be deleted in v1.** Individual expenses can still be deleted.
+6. **Any member can delete a month's tracker** (Settings → "This month", §6.3.1). It deletes every expense in that month for the whole household, after the user types the month label to confirm. Categories and other months stay. The month then shows its empty state again, so it can be recreated empty or copied from an earlier month (rule 4).
 
 ### 4.4 Categories
 1. **Categories belong to the household and are shared across all months.** They are not per-tracker.
@@ -278,7 +277,7 @@ $$;
 | `households` | `id = my_household_id()` | Update `name` only when `id = my_household_id()`. Create, code changes, and membership changes go **only through RPCs** (§8). |
 | `household_members` | `household_id = my_household_id()` | None directly. Use RPCs only. |
 | `categories` | `household_id = my_household_id()` | Same condition, for all members |
-| `trackers` | `household_id = my_household_id()` | Insert through `create_tracker` only. No update or delete in v1. |
+| `trackers` | `household_id = my_household_id()` | Insert through `create_tracker` and delete through `delete_tracker` only. No update. |
 | `expenses` | `household_id = my_household_id()` | Same condition, for all members |
 
 The household `code` column must only be readable by members. The lookup for people joining goes through the `lookup_household` RPC, which returns the name, owner, and members but never lists codes.
@@ -406,6 +405,10 @@ These are stored per browser in localStorage, not in Supabase:
 - Note: "Arrange the tracker's sections. This only changes the layout on this device."
 - **Reset to default** restores the order above. **Cancel** discards changes; **Save** applies the new order and stores it in localStorage (§5.3).
 - When a month has no tracker, the empty-month card takes the place of the first non-Month section.
+- "This month" (only when the viewed month has a tracker): a red section "Delete the {Month Year} tracker" with a **Delete tracker** button that opens the delete confirmation:
+  - Title "Delete the {Month Year} tracker?". A warning box: "This can't be undone." plus the month's expense count, budgeted and spent totals, and that categories and other months stay.
+  - The user must type the month label (for example "November 2026", case-insensitive) to enable **Delete tracker**. **Keep tracker** cancels.
+  - Toast: "Deleted the {Month Year} tracker and N expenses".
 
 **Members dialog:**
 - Lists every member with their name, a "(you)" marker for the current user, and their role (Owner or Member).
@@ -580,6 +583,7 @@ Any change made by one member must appear for every other member who has the tra
 | Category added, renamed, or recolored | Update everywhere it appears: summary, legend, chart, filter, expense rows, and selects in open dialogs. |
 | Category deleted | Remove it and its expenses. If it was the active filter, reset to All. Show a toast: "{name} was deleted by {member}". |
 | Tracker created by someone else | Add it to the month chips. If the user is looking at that month's empty state, show the new tracker. |
+| Tracker deleted by someone else | Remove it from the chips and drop its cached expenses. If the user is viewing that month, close any expense dialog and show the empty state. Toast: "The {Month Year} tracker was deleted by {member}". |
 | Household renamed | Update the header. |
 | Household code reset | If the Invite dialog is open, show the new code. |
 | A member joins or leaves | Update the avatars, member count, Members dialog, and owner selects. If a departing member's expenses were reassigned, those rows update as well. |
@@ -629,7 +633,9 @@ Any change made by one member must appear for every other member who has the tra
 | Concurrency | Two members create the same month's tracker at once | `unique(household_id, year, month)` prevents a duplicate. The second request returns the existing tracker, with its copies skipped, and the UI shows it. |
 | Concurrency | Two members create a category with the same name at once | The case-insensitive unique index rejects the second one with the duplicate-name error. |
 | Realtime | The connection drops | Show a subtle "Reconnecting…" indicator. Refetch the current month once reconnected. |
-| Out of scope | Owner transfer, deleting a household, removing a member, deleting a tracker | Not available in v1. There is no UI for any of them. |
+| Months | Deleting a month's tracker | Every expense in that month is deleted; categories and other months stay. The dialog shows counts and totals, and the user must type the month label. The month shows its empty state and can be recreated. |
+| Concurrency | A tracker is deleted while another member is viewing it | Their view switches to the empty state with a "deleted by {member}" toast. Open expense dialogs for that month close. |
+| Out of scope | Owner transfer, deleting a household, removing a member | Not available in v1. There is no UI for any of them. |
 | Clipboard | The clipboard API is unavailable | Fall back to selecting the text, with instructions. |
 
 ---
@@ -653,6 +659,7 @@ Any change made by one member must appear for every other member who has the tra
 | `reset_household_code` | — | Generates a new unique code for the caller's household and returns it. | `NOT_IN_HOUSEHOLD` |
 | `get_copy_source` | `p_year, p_month` | Returns the most recent tracker before that month that has at least one expense, with its expenses grouped by category. Returns null if there is none. | — |
 | `create_tracker` | `p_year, p_month, p_copy_expense_ids uuid[] default '{}', p_include_actual bool default false` | Inserts the tracker, or returns the existing one on a unique conflict. Copies the selected expenses following the rules in §6.3.4: due day clamped to the month's last day, owner falls back to the household owner, actual set to 0 unless `p_include_actual`. | `NOT_IN_HOUSEHOLD` |
+| `delete_tracker` | `p_tracker_id` | Deletes one of the caller's household's trackers; its expenses cascade. Returns `{ year, month, expense_count, budgeted_cents, actual_cents }`. | `NOT_AUTHENTICATED`, `NOT_IN_HOUSEHOLD`, `TRACKER_NOT_FOUND` |
 | `category_delete_impact` | `p_category_id` | Returns `{ expense_count, month_count, budgeted_cents, actual_cents }` for the delete confirmation dialog. | — |
 
 Implementation notes:
@@ -765,7 +772,7 @@ The prototypes include **prototype-only scaffolding that must not ship:**
 | Deleting a household | **Not available.** |
 | Removing members | **Not available.** Members can only leave on their own; the owner can't leave. |
 | Live sync | **Required.** Use Supabase Realtime for every household, especially those with several members (§6.6). |
-| Deleting trackers | **Not available.** Individual expenses can still be deleted. |
+| Deleting trackers | **Available to every member**, from Settings, with a typed confirmation. Deletes the month's expenses; categories stay. |
 | Household code expiry | **Codes never expire** and have no usage limit. They change only when a member resets them. |
 | Currency | **PHP (₱) only.** |
 | "Last edited by" on expenses | **Not shown.** `created_by` and `updated_by` stay in the schema for record-keeping and for the realtime conflict notices (§6.6), but no screen displays them. |
@@ -781,7 +788,8 @@ There are no open questions left.
 - [ ] Google sign-in through Supabase Auth works. Routing sends users to onboarding or the tracker based on membership.
 - [ ] The one-household-per-user rule is enforced in the database (`household_members.user_id` primary key) and in the RPCs.
 - [ ] Live sync: with two browsers signed in as different members, every create, edit, and delete appears in the other browser within about 2 seconds, without a refresh. Edit conflicts are handled as in §6.6.
-- [ ] No UI exists for owner transfer, deleting a household, removing members, or deleting trackers.
+- [ ] No UI exists for owner transfer, deleting a household, or removing members.
+- [ ] Deleting a month's tracker (Settings → This month) requires typing the month label, removes its expenses for every member live, and leaves the month ready to recreate.
 - [ ] Create household (name 2–50) generates a unique `XXXX-XXXX` code from the allowed alphabet.
 - [ ] Join by code normalizes input, validates it, shows a confirmation step, then joins.
 - [ ] Any member can rename the household and view, copy, or reset the code. Reset invalidates the old code.
