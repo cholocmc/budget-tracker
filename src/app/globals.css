@@ -287,7 +287,9 @@ body.resizing { cursor: col-resize; user-select: none; }
 .legend .pcs b { color: var(--fg); font-weight: 500; }
 .legend li.on { background: var(--surface-2); }
 .legend .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.readout { font-size: 13px; color: var(--muted); min-height: 40px; border-top: 1px solid var(--line); padding-top: 10px; }
+/* Fixed three-line box (name, budgeted, actual) so the legend below doesn't jump while hovering. */
+.readout { font-size: 15px; line-height: 22px; color: var(--muted); height: calc(3 * 22px + 10px); border-bottom: 1px solid var(--line); padding-bottom: 10px; display: flex; flex-direction: column; justify-content: center; }
+.readout .ro-name, .readout .ro-line { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .readout b { color: var(--fg); font-weight: 600; }
 
 /* Tables */

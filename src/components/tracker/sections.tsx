@@ -345,6 +345,22 @@ function BudgetChart() {
           <span>·</span>
           <span><i className="pie-ico" />Inner pie: actual</span>
         </div>
+        {/* Readout sits above the legend so it stays in view when there are many categories. */}
+        <div className="readout" aria-live="polite">
+          {r ? (
+            <>
+              <b className="ro-name">{r.cat.name}</b>
+              <span className="ro-line">
+                Budgeted <b className="mono">{fmtCents(r.budget)}</b> ({pctOf(r.budget, tot.budget)}%)
+              </span>
+              <span className="ro-line">
+                Actual <b className="mono">{fmtCents(r.actual)}</b> ({pctOf(r.actual, tot.actual)}%)
+              </span>
+            </>
+          ) : (
+            "Hover or tap a slice or category to see its amounts."
+          )}
+        </div>
         <ul className="legend">
           {rows.map((row) => (
             <li
@@ -366,18 +382,6 @@ function BudgetChart() {
             </li>
           ))}
         </ul>
-        <div className="readout" aria-live="polite">
-          {r ? (
-            <>
-              <b>{r.cat.name}</b>
-              <br />
-              Budgeted <b className="mono">{fmtCents(r.budget)}</b> ({pctOf(r.budget, tot.budget)}%) · Actual{" "}
-              <b className="mono">{fmtCents(r.actual)}</b> ({pctOf(r.actual, tot.actual)}%)
-            </>
-          ) : (
-            "Hover or tap a slice or category to see its amounts."
-          )}
-        </div>
       </div>
     </div>
   );
