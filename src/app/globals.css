@@ -293,7 +293,9 @@ body.resizing { cursor: col-resize; user-select: none; }
 .readout b { color: var(--fg); font-weight: 600; }
 
 /* Tables */
-.scroll { overflow-x: auto; min-width: 0; }
+/* position: relative keeps absolutely positioned children (e.g. .sr-only header labels) inside the scroll box,
+   so a wide table can't widen the page. */
+.scroll { overflow-x: auto; min-width: 0; position: relative; }
 .pg-tracker table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .pg-tracker th { font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 500; text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line-strong); white-space: nowrap; }
 .pg-tracker td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: middle; }
