@@ -17,13 +17,28 @@ import { errorCode, errorMessage } from "@/lib/errors";
 import { currentMonthKey, monthKey, monthLabel, parseMonthKey, plural } from "@/lib/format";
 import { getSupabase } from "@/lib/supabase/client";
 import type { Category, CopySource, DeleteImpact, Expense, Household, InitialData, Tracker } from "@/lib/types";
-import { Ctx, SPLIT_DEFAULT, SPLIT_MAX, SPLIT_MIN, type DialogState, type ExpenseInput, type Ops, type Sort, type TrackerCtx, type ViewMode } from "./context";
+import {
+  Ctx,
+  ROWS_DEFAULT,
+  SPLIT_DEFAULT,
+  SPLIT_MAX,
+  SPLIT_MIN,
+  isRowOrder,
+  type DialogState,
+  type ExpenseInput,
+  type Ops,
+  type RowId,
+  type Sort,
+  type TrackerCtx,
+  type ViewMode,
+} from "./context";
 import { Dialogs } from "./dialogs";
 import { ChartSummary, ExpensesSection, Header, Kpis, MonthRail, EmptyMonth } from "./sections";
 import { reducer, type TrackerState } from "./store";
 
 const VIEW_KEY = "finance-tracker-view";
 const SPLIT_KEY = "finance-tracker-split";
+const ROWS_KEY = "finance-tracker-rows";
 
 
 
@@ -59,6 +74,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
   const [sort, setSort] = useState<Sort>({ key: "due", dir: "asc" });
   const [view, setViewState] = useState<ViewMode>("table");
   const [split, setSplitState] = useState(SPLIT_DEFAULT);
+  const [rows, setRowsState] = useState<RowId[]>(ROWS_DEFAULT);
   const [online, setOnline] = useState<Set<string>>(new Set());
   const [connected, setConnected] = useState(true);
   const [copyHint, setCopyHint] = useState<string | null>(null);
@@ -76,6 +92,8 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
       setViewState(v === "list" || v === "table" ? v : window.innerWidth < 700 ? "list" : "table");
       const s = Number(localStorage.getItem(SPLIT_KEY));
       if (s >= SPLIT_MIN && s <= SPLIT_MAX) setSplitState(s);
+      const r: unknown = JSON.parse(localStorage.getItem(ROWS_KEY) ?? "null");
+      if (isRowOrder(r)) setRowsState(r);
     } catch {
       setViewState(window.innerWidth < 700 ? "list" : "table");
     }
@@ -95,6 +113,14 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
         localStorage.setItem(SPLIT_KEY, String(pct));
       } catch {}
     }
+  }, []);
+
+  const setRows = useCallback((v: RowId[]) => {
+    if (!isRowOrder(v)) return;
+    setRowsState(v);
+    try {
+      localStorage.setItem(ROWS_KEY, JSON.stringify(v));
+    } catch {}
   }, []);
 
   /* ---------- Derived ---------- */
@@ -570,6 +596,8 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
         setView,
         split,
         setSplit,
+        rows,
+        setRows,
       }
     : null;
 
@@ -604,21 +632,15 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
     <Ctx.Provider value={ctx}>
       <div className="wrap pg-tracker">
         <Header />
-        <MonthRail />
-        {!tracker ? (
-          <EmptyMonth />
-        ) : !expenses ? (
-          <>
-            <div className="skeleton" style={{ minHeight: 110 }} />
-            <div className="skeleton" style={{ minHeight: 320 }} />
-          </>
-        ) : (
-          <>
-            <Kpis />
-            <ChartSummary />
-            <ExpensesSection />
-          </>
-        )}
+        {rows.map((row) => {
+          if (row === "month") return <MonthRail key={row} />;
+          // Without a tracker, the empty-month card takes the place of the first data row.
+          if (!tracker) return row === rows.find((r) => r !== "month") ? <EmptyMonth key="empty" /> : null;
+          if (!expenses) return <div key={row} className="skeleton" style={{ minHeight: row === "totals" ? 110 : 320 }} />;
+          if (row === "totals") return <Kpis key={row} />;
+          if (row === "summary") return <ChartSummary key={row} />;
+          return <ExpensesSection key={row} />;
+        })}
         <Footer />
       </div>
       {dialog && <Dialogs dialog={dialog} />}

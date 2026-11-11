@@ -289,6 +289,7 @@ These are stored per browser in localStorage, not in Supabase:
 - theme (key `finance-tracker-theme`)
 - table/list view
 - the chart/summary split width
+- the order of the tracker's sections (key `finance-tracker-rows`, §6.3.1)
 
 ---
 
@@ -392,8 +393,19 @@ These are stored per browser in localStorage, not in Supabase:
 - **Member avatars** (initials on a colored circle). The whole avatar group is a button that opens the **Members** dialog.
 - **Invite** button, which opens the household code dialog.
 - **Light mode** switch.
+- **Settings** button (gear icon), which opens the **Settings** dialog.
 - **Sign out** button.
 - On phones, the button labels are hidden and only icons show; the controls stay on one row.
+
+**Settings dialog:**
+- "Section order": lists the four sections below the header in their current order, each with its name, a one-line description, and move up / move down buttons (disabled at the ends):
+  1. **Month** (month switcher and Add expense)
+  2. **Month totals** (Budgeted, Actual spent, Remaining)
+  3. **Budget vs actual and Category summary**
+  4. **Expenses**
+- Note: "Arrange the tracker's sections. This only changes the layout on this device."
+- **Reset to default** restores the order above. **Cancel** discards changes; **Save** applies the new order and stores it in localStorage (§5.3).
+- When a month has no tracker, the empty-month card takes the place of the first non-Month section.
 
 **Members dialog:**
 - Lists every member with their name, a "(you)" marker for the current user, and their role (Owner or Member).

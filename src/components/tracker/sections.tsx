@@ -8,6 +8,7 @@ import {
   IconLogout,
   IconPlus,
   IconRight,
+  IconSettings,
   IconTable,
   IconTrash,
   IconUserPlus,
@@ -73,6 +74,10 @@ export function Header() {
           <span className="lbl">Invite</span>
         </button>
         <ThemeSwitch />
+        <button type="button" className="btn ghost signout" aria-label="Settings" title="Settings" onClick={() => open({ kind: "settings" })}>
+          <IconSettings />
+          <span className="lbl">Settings</span>
+        </button>
         <button type="button" className="btn ghost signout" aria-label="Sign out" title="Sign out" onClick={() => void ops.signOut()}>
           <IconLogout />
           <span className="lbl">Sign out</span>

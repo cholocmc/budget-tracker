@@ -107,7 +107,7 @@ Files in `src/components/tracker/`:
   - removing members
   - deleting trackers
 - **No prototype scaffolding** (PRD §10): no sample data, no "view as" switcher, and no fake delays.
-- **localStorage** holds only UI preferences: theme (`finance-tracker-theme`), view, and split width. Wrap every access in `try/catch`.
+- **localStorage** holds only UI preferences: theme (`finance-tracker-theme`), view, split width, and section order (`finance-tracker-rows`). Wrap every access in `try/catch`.
 
 ### Styling
 

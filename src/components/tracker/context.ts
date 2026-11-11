@@ -8,6 +8,19 @@ export type SortKey = "category" | "owner" | "due" | "budget" | "actual" | "rema
 export type Sort = { key: SortKey; dir: "asc" | "desc" };
 export type ViewMode = "table" | "list";
 
+/** The tracker's rearrangeable rows, below the header (Settings dialog). */
+export type RowId = "month" | "totals" | "summary" | "expenses";
+export const ROWS_DEFAULT: RowId[] = ["month", "totals", "summary", "expenses"];
+export const ROW_INFO: Record<RowId, { name: string; detail: string }> = {
+  month: { name: "Month", detail: "Month switcher and Add expense" },
+  totals: { name: "Month totals", detail: "Budgeted, Actual spent, Remaining" },
+  summary: { name: "Budget vs actual and Category summary", detail: "Chart and per-category totals" },
+  expenses: { name: "Expenses", detail: "Every expense this month" },
+};
+/** A saved order is valid only if it holds each row exactly once. */
+export const isRowOrder = (v: unknown): v is RowId[] =>
+  Array.isArray(v) && v.length === ROWS_DEFAULT.length && ROWS_DEFAULT.every((r) => v.includes(r));
+
 export type DialogState =
   | { kind: "rename" }
   | { kind: "members" }
@@ -17,7 +30,8 @@ export type DialogState =
   | { kind: "deleteCategory"; id: string }
   | { kind: "expense"; id?: string }
   | { kind: "deleteExpense"; id: string }
-  | { kind: "copy"; source: CopySource };
+  | { kind: "copy"; source: CopySource }
+  | { kind: "settings" };
 
 export interface ExpenseInput {
   name: string;
@@ -72,6 +86,8 @@ export interface TrackerCtx {
   setView(v: ViewMode): void;
   split: number;
   setSplit(v: number, persist?: boolean): void;
+  rows: RowId[];
+  setRows(v: RowId[]): void;
 }
 
 export const Ctx = createContext<TrackerCtx | null>(null);

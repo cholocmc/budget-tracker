@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
-import { IconCopy } from "@/components/Icons";
+import { IconCopy, IconDown, IconUp } from "@/components/Icons";
 import { Modal } from "@/components/Modal";
 import {
   PALETTE,
@@ -20,7 +20,7 @@ import {
   todayISO,
 } from "@/lib/format";
 import type { Category, CopySource, DeleteImpact, Expense } from "@/lib/types";
-import { useTracker, type DialogState } from "./context";
+import { ROWS_DEFAULT, ROW_INFO, useTracker, type DialogState, type RowId } from "./context";
 import { MoneyInput as MoneyField } from "./MoneyInput";
 import { findExpense } from "./store";
 
@@ -44,7 +44,111 @@ export function Dialogs({ dialog }: { dialog: DialogState }) {
       return <DeleteExpenseDialog id={dialog.id} />;
     case "copy":
       return <CopyDialog source={dialog.source} />;
+    case "settings":
+      return <SettingsDialog />;
   }
+}
+
+/* ---------- Settings: section order (saved per device) ---------- */
+function SettingsDialog() {
+  const { rows, setRows, close } = useTracker();
+  const [draft, setDraft] = useState<RowId[]>(rows);
+  const [announce, setAnnounce] = useState("");
+  const listRef = useRef<HTMLOListElement>(null);
+  // After a move, keep focus on the moved row's button (or its other arrow once it hits an end).
+  const refocus = useRef<{ row: RowId; dir: "up" | "down" } | null>(null);
+
+  useEffect(() => {
+    const f = refocus.current;
+    if (!f || !listRef.current) return;
+    refocus.current = null;
+    const q = (d: string) => listRef.current!.querySelector<HTMLButtonElement>(`button[data-row="${f.row}"][data-dir="${d}"]`);
+    const btn = q(f.dir);
+    (btn && !btn.disabled ? btn : q(f.dir === "up" ? "down" : "up"))?.focus();
+  }, [draft]);
+
+  const move = (i: number, dir: "up" | "down") => {
+    const j = dir === "up" ? i - 1 : i + 1;
+    if (j < 0 || j >= draft.length) return;
+    const next = [...draft];
+    [next[i], next[j]] = [next[j], next[i]];
+    refocus.current = { row: draft[i], dir };
+    setDraft(next);
+    setAnnounce(`${ROW_INFO[draft[i]].name} moved to position ${j + 1} of ${next.length}.`);
+  };
+
+  const isDefault = draft.every((r, i) => r === ROWS_DEFAULT[i]);
+  const changed = draft.some((r, i) => r !== rows[i]);
+
+  return (
+    <Modal title="Settings" onClose={close} initialFocus="#st-save">
+      <div>
+        <div className="eyebrow" style={{ marginBottom: 4 }}>Section order</div>
+        <p className="code-note">Arrange the tracker&apos;s sections. This only changes the layout on this device.</p>
+      </div>
+      <ol className="order-list" ref={listRef}>
+        {draft.map((r, i) => (
+          <li key={r}>
+            <span className="order-pos" aria-hidden="true">{i + 1}</span>
+            <span className="order-text">
+              <b>{ROW_INFO[r].name}</b>
+              <small>{ROW_INFO[r].detail}</small>
+            </span>
+            <span className="order-btns">
+              <button
+                type="button"
+                className="icon-btn"
+                data-row={r}
+                data-dir="up"
+                aria-label={`Move ${ROW_INFO[r].name} up`}
+                disabled={i === 0}
+                onClick={() => move(i, "up")}
+              >
+                <IconUp />
+              </button>
+              <button
+                type="button"
+                className="icon-btn"
+                data-row={r}
+                data-dir="down"
+                aria-label={`Move ${ROW_INFO[r].name} down`}
+                disabled={i === draft.length - 1}
+                onClick={() => move(i, "down")}
+              >
+                <IconDown />
+              </button>
+            </span>
+          </li>
+        ))}
+      </ol>
+      <div className="sr-only" aria-live="polite">{announce}</div>
+      <div className="modal-actions">
+        <button
+          type="button"
+          className="link-btn order-reset"
+          disabled={isDefault}
+          onClick={() => {
+            setDraft(ROWS_DEFAULT);
+            setAnnounce("Sections reset to the default order.");
+          }}
+        >
+          Reset to default
+        </button>
+        <button type="button" className="btn ghost" onClick={close}>Cancel</button>
+        <button
+          id="st-save"
+          type="button"
+          className="btn primary"
+          onClick={() => {
+            if (changed) setRows(draft);
+            close();
+          }}
+        >
+          Save
+        </button>
+      </div>
+    </Modal>
+  );
 }
 
 function MemberList() {
