@@ -15,6 +15,7 @@ import {
 } from "@/lib/data";
 import { errorCode, errorMessage } from "@/lib/errors";
 import { currentMonthKey, monthKey, monthLabel, parseMonthKey, plural } from "@/lib/format";
+import { TrackerSkeleton } from "./TrackerSkeleton";
 import { getSupabase } from "@/lib/supabase/client";
 import type { Category, CopySource, DeleteImpact, Expense, Household, InitialData, Tracker } from "@/lib/types";
 import {
@@ -55,8 +56,8 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
 
   const [state, dispatch] = useReducer(reducer, initial, (init): TrackerState => {
     const expenses: Record<string, Expense[]> = {};
-    if (init.initialMonth && init.initialExpenses) {
-      const { y, m } = parseMonthKey(init.initialMonth);
+    if (init.prefetchedMonth && init.initialExpenses) {
+      const { y, m } = parseMonthKey(init.prefetchedMonth);
       const t = init.trackers.find((x) => x.year === y && x.month === m);
       if (t) expenses[t.id] = init.initialExpenses;
     }
@@ -650,15 +651,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
     );
   }
 
-  if (!ctx) {
-    return (
-      <div className="wrap pg-tracker" aria-busy="true">
-        <div className="skeleton" style={{ minHeight: 72 }} />
-        <div className="skeleton" style={{ minHeight: 88 }} />
-        <div className="skeleton" style={{ minHeight: 320 }} />
-      </div>
-    );
-  }
+  if (!ctx) return <TrackerSkeleton />;
 
   return (
     <Ctx.Provider value={ctx}>

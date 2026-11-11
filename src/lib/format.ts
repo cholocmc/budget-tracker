@@ -33,7 +33,18 @@ export const currentMonthKey = () => {
   const d = new Date();
   return monthKey(d.getFullYear(), d.getMonth() + 1);
 };
-export const shiftMonthKey = (k: string, delta: number) => {
+/** The current month in an IANA time zone, for the server's best guess at the viewer's month. */
+export const monthKeyInZone = (timeZone: string) => {
+  try {
+    const parts = new Intl.DateTimeFormat("en-US", { timeZone, year: "numeric", month: "numeric" }).formatToParts(new Date());
+    const y = Number(parts.find((p) => p.type === "year")?.value);
+    const m = Number(parts.find((p) => p.type === "month")?.value);
+    return y && m ? monthKey(y, m) : null;
+  } catch {
+    return null; // Unknown time zone.
+  }
+};
+export const shiftMonthKey =(k: string, delta: number) => {
   const { y, m } = parseMonthKey(k);
   const d = new Date(y, m - 1 + delta, 1);
   return monthKey(d.getFullYear(), d.getMonth() + 1);

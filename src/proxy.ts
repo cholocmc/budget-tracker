@@ -20,9 +20,10 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims verifies the JWT locally against the cached JWKS (with asymmetric signing keys), so most
+  // requests skip the Auth server round trip that getUser makes. It still refreshes expired sessions.
+  const { data: auth } = await supabase.auth.getClaims();
+  const userId = auth?.claims.sub;
 
   const path = request.nextUrl.pathname;
   const isTracker = path === "/tracker" || path.startsWith("/tracker/");
@@ -38,19 +39,20 @@ export async function proxy(request: NextRequest) {
     return res;
   };
 
-  if (!user) {
+  if (!userId) {
     return isTracker || isOnboarding ? redirectTo("/") : response;
   }
 
-  if (isTracker || isOnboarding || isLanding) {
+  // The tracker page looks up the membership itself and redirects to /onboarding without one,
+  // so the proxy skips that duplicate query to keep it off the tracker's critical path.
+  if (isOnboarding || isLanding) {
     const { data } = await supabase
       .from("household_members")
       .select("household_id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .maybeSingle();
     const hasHousehold = !!data;
     if (isLanding) return redirectTo(hasHousehold ? "/tracker" : "/onboarding");
-    if (isTracker && !hasHousehold) return redirectTo("/onboarding");
     if (isOnboarding && hasHousehold) return redirectTo("/tracker");
   }
 

@@ -66,6 +66,31 @@ export async function fetchExpenses(sb: SupabaseClient, trackerId: string): Prom
   return (data ?? []).map(normalizeExpense);
 }
 
+/**
+ * A month's expenses found by year and month instead of tracker id, so the server page can fetch
+ * them alongside the trackers list instead of after it. No tracker for the month gives [].
+ */
+export async function fetchMonthExpenses(
+  sb: SupabaseClient,
+  householdId: string,
+  year: number,
+  month: number,
+): Promise<Expense[] | null> {
+  const { data, error } = await sb
+    .from("expenses")
+    .select(`${EXPENSE_COLUMNS}, trackers!inner(year, month)`)
+    .eq("household_id", householdId)
+    .eq("trackers.year", year)
+    .eq("trackers.month", month)
+    .order("due_date", { ascending: true })
+    .order("created_at", { ascending: true });
+  if (error) return null;
+  return (data ?? []).map((row: Record<string, unknown>) => {
+    const { trackers: _tracker, ...rest } = row;
+    return normalizeExpense(rest);
+  });
+}
+
 /** bigint columns can arrive as strings; keep them as numbers of centavos. */
 export function normalizeExpense(row: Record<string, unknown>): Expense {
   return {

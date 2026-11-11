@@ -79,6 +79,10 @@ export interface InitialData {
   members: Member[];
   categories: Category[];
   trackers: Tracker[];
+  /** The month in the URL; null on bare /tracker, where the browser picks its local month. */
   initialMonth: string | null;
+  /** The month whose expenses came with the page: the URL month, or the server's guess at the viewer's month. */
+  prefetchedMonth: string | null;
+  /** Expenses for prefetchedMonth, or null when they still need loading. */
   initialExpenses: Expense[] | null;
 }

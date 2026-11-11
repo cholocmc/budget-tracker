@@ -369,6 +369,18 @@ body.resizing { cursor: col-resize; user-select: none; }
 .skeleton::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, var(--accent-soft), transparent); animation: shimmer 1.4s infinite; }
 @keyframes shimmer { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
 
+/* Page skeleton (TrackerSkeleton): bones in the shape of the real sections */
+.pg-tracker .sk { display: block; max-width: 100%; flex-shrink: 0; border-radius: 8px; background: var(--surface-2); position: relative; overflow: hidden; }
+.pg-tracker .sk-round { border-radius: 999px; }
+.pg-tracker .sk::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, var(--accent-soft), transparent); animation: shimmer 1.4s infinite; }
+.pg-tracker .sk-stack { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.pg-tracker .sk-panel { min-height: 280px; }
+.pg-tracker .sk-center { flex: 1; display: grid; place-items: center; }
+.pg-tracker .sk-split { --left: 42%; }
+@media (max-width: 640px) {
+  .pg-tracker .sk-center .sk { width: 160px !important; height: 160px !important; }
+}
+
 @media (max-width: 900px) {
   .split { grid-template-columns: minmax(0,1fr) !important; gap: 16px; }
   .resizer { display: none; }
