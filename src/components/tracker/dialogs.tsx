@@ -214,41 +214,54 @@ function SettingsDialog() {
         <div className="eyebrow" style={{ marginBottom: 4 }}>Section order</div>
         <p className="code-note">Arrange the tracker&apos;s sections. This only changes the layout on this device.</p>
       </div>
-      <ol className="order-list" ref={listRef}>
-        {draft.map((r, i) => (
-          <li key={r}>
-            <span className="order-pos" aria-hidden="true">{i + 1}</span>
-            <span className="order-text">
-              <b>{ROW_INFO[r].name}</b>
-              <small>{ROW_INFO[r].detail}</small>
-            </span>
-            <span className="order-btns">
-              <button
-                type="button"
-                className="icon-btn"
-                data-row={r}
-                data-dir="up"
-                aria-label={`Move ${ROW_INFO[r].name} up`}
-                disabled={i === 0}
-                onClick={() => move(i, "up")}
-              >
-                <IconUp />
-              </button>
-              <button
-                type="button"
-                className="icon-btn"
-                data-row={r}
-                data-dir="down"
-                aria-label={`Move ${ROW_INFO[r].name} down`}
-                disabled={i === draft.length - 1}
-                onClick={() => move(i, "down")}
-              >
-                <IconDown />
-              </button>
-            </span>
-          </li>
-        ))}
-      </ol>
+      <div className="order-wrap">
+        <ol className="order-list" ref={listRef}>
+          {draft.map((r, i) => (
+            <li key={r}>
+              <span className="order-pos" aria-hidden="true">{i + 1}</span>
+              <span className="order-text">
+                <b>{ROW_INFO[r].name}</b>
+                <small>{ROW_INFO[r].detail}</small>
+              </span>
+              <span className="order-btns">
+                <button
+                  type="button"
+                  className="icon-btn"
+                  data-row={r}
+                  data-dir="up"
+                  aria-label={`Move ${ROW_INFO[r].name} up`}
+                  disabled={i === 0}
+                  onClick={() => move(i, "up")}
+                >
+                  <IconUp />
+                </button>
+                <button
+                  type="button"
+                  className="icon-btn"
+                  data-row={r}
+                  data-dir="down"
+                  aria-label={`Move ${ROW_INFO[r].name} down`}
+                  disabled={i === draft.length - 1}
+                  onClick={() => move(i, "down")}
+                >
+                  <IconDown />
+                </button>
+              </span>
+            </li>
+          ))}
+        </ol>
+        <button
+          type="button"
+          className="link-btn order-reset"
+          disabled={isDefault}
+          onClick={() => {
+            setDraft(ROWS_DEFAULT);
+            setAnnounce("Sections reset to the default order.");
+          }}
+        >
+          Reset to default
+        </button>
+      </div>
       <div className="sr-only" aria-live="polite">{announce}</div>
       {tracker && expenses && (
         <div className="eyebrow">This month</div>
@@ -277,17 +290,6 @@ function SettingsDialog() {
         </div>
       )}
       <div className="modal-actions">
-        <button
-          type="button"
-          className="link-btn order-reset"
-          disabled={isDefault}
-          onClick={() => {
-            setDraft(ROWS_DEFAULT);
-            setAnnounce("Sections reset to the default order.");
-          }}
-        >
-          Reset to default
-        </button>
         <button type="button" className="btn ghost" onClick={close}>Cancel</button>
         <button
           id="st-save"
