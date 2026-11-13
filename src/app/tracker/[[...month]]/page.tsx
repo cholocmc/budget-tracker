@@ -6,7 +6,7 @@ import { isMonthKey, monthKeyInZone, parseMonthKey } from "@/lib/format";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { InitialData } from "@/lib/types";
 
-export const metadata = { title: "Tracker · Monthly Budget Tracker" };
+export const metadata = { title: "Tracker · Budget Mate" };
 
 export default async function TrackerPage({ params }: { params: Promise<{ month?: string[] }> }) {
   const { month } = await params;

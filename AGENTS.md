@@ -4,7 +4,7 @@ Guidance for AI coding agents working in this repository.
 
 ## Project
 
-Monthly Budget Tracker is a shared household budgeting web app.
+Budget Mate is a shared household budgeting web app.
 
 - **Spec:** [docs/PRD.md](docs/PRD.md) is the source of truth for behavior, copy, and design. Read the relevant section before you change a feature, and cite it (for example "PRD §6.3.4") in code comments where it helps.
 - **Setup:** see [README.md](README.md) for Supabase, Google OAuth, and env vars.

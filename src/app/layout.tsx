@@ -8,7 +8,7 @@ const sora = Sora({ subsets: ["latin"], weight: ["500", "600", "700"], variable:
 const plex = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-plex", display: "swap" });
 const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-jetbrains", display: "swap" });
 
-const TITLE = "Monthly Budget Tracker";
+const TITLE = "Budget Mate";
 const DESCRIPTION = "Plan every peso. Shared household budgeting with budget vs actual for every month.";
 
 // Absolute URLs for link previews (og:image etc.). Vercel sets the production

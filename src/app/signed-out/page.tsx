@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 
-export const metadata = { title: "Signed out · Monthly Budget Tracker" };
+export const metadata = { title: "Signed out · Budget Mate" };
 
 export default function SignedOutPage() {
   return (

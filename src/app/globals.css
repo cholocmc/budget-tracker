@@ -99,7 +99,7 @@ svg.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-widt
 
 .logo { width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; flex: none;
   background: linear-gradient(140deg, #3DF5A0, #16B8C9); box-shadow: 0 0 24px var(--glow); }
-.logo svg { width: 22px; height: 22px; stroke: #03140C; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.logo svg { width: 70%; height: 70%; fill: #03140C; }
 
 /* Theme switch */
 .theme-switch { display: inline-flex; align-items: center; gap: 8px; border: 0; background: transparent; cursor: pointer; padding: 4px; border-radius: 999px; color: var(--muted); font-size: 14px; }
@@ -483,7 +483,6 @@ body.resizing { cursor: col-resize; user-select: none; }
   & nav { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 20px; }
   & .lbrand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-weight: 600; font-size: 17px; }
   & .lbrand .logo { width: 36px; height: 36px; border-radius: 11px; box-shadow: 0 0 22px var(--glow); }
-  & .lbrand .logo svg { width: 20px; height: 20px; }
   & .nav-right { display: flex; align-items: center; gap: 10px; }
   & .btn-ghost { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line-strong); background: transparent; color: var(--fg); font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; }
   & .btn-ghost:hover { border-color: var(--accent); }
@@ -615,7 +614,6 @@ body.resizing { cursor: col-resize; user-select: none; }
   & .otop { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 18px; flex-wrap: wrap; }
   & .obrand { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 600; font-size: 16px; min-width: 0; }
   & .obrand .logo { width: 34px; height: 34px; border-radius: 10px; box-shadow: 0 0 20px var(--glow); }
-  & .obrand .logo svg { width: 19px; height: 19px; }
   & .top-right { display: flex; align-items: center; gap: 10px; }
   & .account { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px 4px 4px; background: var(--surface); }
   & .account .avi { width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(140deg, #3DF5A0, #16B8C9); color: #03140C; display: grid; place-items: center; font-family: var(--font-mono); font-size: 11px; font-weight: 600; }

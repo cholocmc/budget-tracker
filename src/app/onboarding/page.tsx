@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { OnboardingClient } from "@/components/onboarding/OnboardingClient";
 import { createSupabaseServer } from "@/lib/supabase/server";
 
-export const metadata = { title: "Set up your household · Monthly Budget Tracker" };
+export const metadata = { title: "Set up your household · Budget Mate" };
 
 export default async function OnboardingPage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
   const supabase = await createSupabaseServer();

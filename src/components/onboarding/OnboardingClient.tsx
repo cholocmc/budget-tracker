@@ -164,7 +164,7 @@ export function OnboardingClient({ userName, initialMode }: { userName: string; 
         <div className="otop">
           <div className="obrand">
             <LogoMark />
-            Monthly Budget Tracker
+            Budget Mate
           </div>
           <div className="top-right">
             <div className="account">

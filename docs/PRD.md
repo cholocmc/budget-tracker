@@ -1,4 +1,4 @@
-# PRD: Monthly Budget Tracker
+# PRD: Budget Mate
 
 **Owner:** Cholo (CholoCMC)
 **Status:** Ready for build. All three pages are designed and prototyped. All questions are resolved (§11).
@@ -9,7 +9,7 @@
 
 ## 1. Overview
 
-Monthly Budget Tracker is a shared household budgeting web app. A household keeps one tracker per month. Each tracker holds expenses grouped into categories. For each expense, members record the **budgeted** amount and the **actual** amount, and the app shows the gap per category and for the whole month.
+Budget Mate is a shared household budgeting web app. A household keeps one tracker per month. Each tracker holds expenses grouped into categories. For each expense, members record the **budgeted** amount and the **actual** amount, and the app shows the gap per category and for the whole month.
 
 Users sign in with Google. Each user belongs to exactly one household. They either create a household or join an existing one with a household code. Every member of a household has the same permissions.
 
@@ -300,7 +300,7 @@ These are stored per browser in localStorage, not in Supabase:
 
 **Sections:**
 1. **Nav:**
-   - Logo and the name "Monthly Budget Tracker" on the left.
+   - Logo and the name "Budget Mate" on the left.
    - On the right: the light mode switch and a "Sign in →" link that scrolls to the sign-in button.
 2. **Hero:**
    - Eyebrow: "Shared household budgeting".
