@@ -393,7 +393,7 @@ body.resizing { cursor: col-resize; user-select: none; }
   .top { gap: 12px; }
   .brand h1 { font-size: 17px; }
   .members { width: 100%; justify-content: space-between; }
-  .btn .lbl, .theme-switch .lbl { display: none; }
+  .btn .lbl { display: none; }
   .members .btn { padding: 8px 10px; }
 
   .rail { flex-direction: column; align-items: stretch; padding: 12px; }
@@ -561,7 +561,7 @@ body.resizing { cursor: col-resize; user-select: none; }
   }
   @media (max-width: 640px) {
     & section { padding-block: 52px; }
-    & .theme-switch .lbl, & .btn-ghost .lbl { display: none; }
+    & .btn-ghost .lbl { display: none; }
     & .hero h1 { font-size: 38px; }
     & .google-btn { width: 100%; justify-content: center; }
     & .cta-row { align-items: stretch; width: 100%; }
@@ -679,7 +679,6 @@ body.resizing { cursor: col-resize; user-select: none; }
   @media (max-width: 560px) {
     & .card { padding: 22px 18px; border-radius: 18px; gap: 20px; }
     & .choices { grid-template-columns: 1fr; }
-    & .theme-switch .lbl { display: none; }
     & .account .who { display: none; }
     & .oactions { flex-direction: column-reverse; }
     & .oactions .btn { width: 100%; }

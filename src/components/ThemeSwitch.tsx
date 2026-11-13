@@ -46,7 +46,6 @@ export function ThemeSwitch() {
       <span className="track">
         <span className="thumb">{light ? <IconSun className="" /> : <IconMoon className="" />}</span>
       </span>
-      <span className="lbl">Light mode</span>
     </button>
   );
 }
