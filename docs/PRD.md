@@ -26,7 +26,6 @@ Users sign in with Google. Each user belongs to exactly one household. They eith
 - Roles beyond Owner and Member, or per-member permissions.
 - Native mobile apps (a responsive web app only).
 - Transferring ownership of a household.
-- Deleting a household.
 - Removing another member from a household. Members can only leave on their own.
 - Expiring household codes, or limiting how many times a code can be used.
 
@@ -96,8 +95,8 @@ Routing rules:
    - rename the household
    - view and copy the household code
    - reset the household code
-3. **The owner cannot leave the household.** Only non-owners see "Leave household". In v1 there is no ownership transfer and no way to delete a household, so the owner stays in the household permanently.
-   - **Not available in v1:** transferring ownership, deleting a household, and removing another member. Don't build UI for these.
+3. **The owner cannot leave the household.** Only non-owners see "Leave household". In v1 there is no ownership transfer, so the owner stays in the household until they delete it (rule 6).
+   - **Not available in v1:** transferring ownership and removing another member. Don't build UI for these.
 4. **Leaving a household:**
    - It needs a confirmation dialog.
    - Access ends immediately.
@@ -107,6 +106,10 @@ Routing rules:
 5. **Household name rules:**
    - On creation: required, trimmed, 2–50 characters.
    - On rename: required, trimmed, at most 50 characters. If the name is unchanged, nothing is saved.
+6. **Deleting a household (owner only):**
+   - Only the owner sees it, in Settings → "Household" (§6.3.1). It needs a typed confirmation of the household name.
+   - It is **irreversible** and deletes the household with every member's membership, every category, every monthly tracker, and every expense.
+   - Every member, the owner included, ends up with no household. The owner sees a "You deleted {household}" screen; other members see "{owner} deleted {household}" live. Both screens offer **Create a household** and **Join with a code**, which go to onboarding.
 
 ### 4.2 Household code
 1. The format is `XXXX-XXXX`: 8 characters plus a hyphen.
@@ -409,6 +412,9 @@ These are stored per browser in localStorage, not in Supabase:
   - Title "Delete the {Month Year} tracker?". A warning box: "This can't be undone." plus the month's expense count, budgeted and spent totals, and that categories and other months stay.
   - The user must type the month label (for example "November 2026", case-insensitive) to enable **Delete tracker**. **Keep tracker** cancels.
   - Toast: "Deleted the {Month Year} tracker and N expenses".
+- "Household" (**owner only**): a red section "Delete {household}" with a **Delete household** button that opens the delete confirmation (§4.1 rule 6):
+  - Title "Delete {household}?". A warning box: "Are you really sure? Deleting your household would put you and all the members back to onboarding, so you either have to create a new household or join another one." (without "and all the members" when the owner is alone), plus "This can't be undone." and how many monthly trackers go with it.
+  - The user must type the household name (case-insensitive) to enable **Delete household**. **Keep household** cancels.
 
 **Members dialog:**
 - Lists every member with their name, a "(you)" marker for the current user, and their role (Owner or Member).
@@ -588,6 +594,7 @@ Any change made by one member must appear for every other member who has the tra
 | Household code reset | If the Invite dialog is open, show the new code. |
 | A member joins or leaves | Update the avatars, member count, Members dialog, and owner selects. If a departing member's expenses were reassigned, those rows update as well. |
 | The current user's own membership is removed (they left from another device) | Show the "You left" screen (§4.1). |
+| The owner deletes the household while others have it open | Close any open dialog and show "{owner} deleted {household}" (§4.1 rule 6), without a toast per deleted row. |
 
 **Conflicts while editing:**
 - When someone opens the edit dialog for an expense or category that another member then **changes**, show an inline notice in the dialog: "{member} just updated this. Review the latest values before saving." Also offer a **Load latest** button.
@@ -656,6 +663,7 @@ Any change made by one member must appear for every other member who has the tra
 | `lookup_household` | `p_code` | Normalizes the code and finds the household. Returns `{ name, owner_name, members: [{ display_name, avatar_url }] }` only. **Rate-limited** (see below). | `INVALID_CODE_FORMAT`, `NOT_FOUND`, `RATE_LIMITED` |
 | `join_household` | `p_code` | Re-checks the code and checks the caller has no membership, then inserts them as `member`. | `ALREADY_IN_HOUSEHOLD`, `NOT_FOUND` |
 | `leave_household` | — | Rejects the owner. Reassigns all of the caller's expenses in the household to the owner, then deletes the caller's membership. | `OWNER_CANNOT_LEAVE`, `NOT_IN_HOUSEHOLD` |
+| `delete_household` | — | Owner only. Deletes the caller's household; memberships, categories, trackers, and expenses cascade. Returns `{ household_name, member_count, tracker_count, expense_count }`. | `NOT_AUTHENTICATED`, `NOT_IN_HOUSEHOLD`, `NOT_OWNER` |
 | `reset_household_code` | — | Generates a new unique code for the caller's household and returns it. | `NOT_IN_HOUSEHOLD` |
 | `get_copy_source` | `p_year, p_month` | Returns the most recent tracker before that month that has at least one expense, with its expenses grouped by category. Returns null if there is none. | — |
 | `create_tracker` | `p_year, p_month, p_copy_expense_ids uuid[] default '{}', p_include_actual bool default false` | Inserts the tracker, or returns the existing one on a unique conflict. Copies the selected expenses following the rules in §6.3.4: due day clamped to the month's last day, owner falls back to the household owner, actual set to 0 unless `p_include_actual`. | `NOT_IN_HOUSEHOLD` |
@@ -769,7 +777,7 @@ The prototypes include **prototype-only scaffolding that must not ship:**
 | Question | Decision for v1 |
 |---|---|
 | Owner transfer | **Not available.** The creator stays the owner. |
-| Deleting a household | **Not available.** |
+| Deleting a household | **Owner only**, from Settings, with a typed confirmation. Every member goes back to onboarding. |
 | Removing members | **Not available.** Members can only leave on their own; the owner can't leave. |
 | Live sync | **Required.** Use Supabase Realtime for every household, especially those with several members (§6.6). |
 | Deleting trackers | **Available to every member**, from Settings, with a typed confirmation. Deletes the month's expenses; categories stay. |
@@ -788,7 +796,8 @@ There are no open questions left.
 - [ ] Google sign-in through Supabase Auth works. Routing sends users to onboarding or the tracker based on membership.
 - [ ] The one-household-per-user rule is enforced in the database (`household_members.user_id` primary key) and in the RPCs.
 - [ ] Live sync: with two browsers signed in as different members, every create, edit, and delete appears in the other browser within about 2 seconds, without a refresh. Edit conflicts are handled as in §6.6.
-- [ ] No UI exists for owner transfer, deleting a household, or removing members.
+- [ ] No UI exists for owner transfer or removing members.
+- [ ] Only the owner can delete the household (Settings → Household), after typing its name. Every member is moved to the "deleted" screen live and then to onboarding.
 - [ ] Deleting a month's tracker (Settings → This month) requires typing the month label, removes its expenses for every member live, and leaves the month ready to recreate.
 - [ ] Create household (name 2–50) generates a unique `XXXX-XXXX` code from the allowed alphabet.
 - [ ] Join by code normalizes input, validates it, shows a confirmation step, then joins.

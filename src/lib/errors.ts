@@ -7,6 +7,7 @@ const MESSAGES: Record<string, string> = {
   NOT_FOUND: "No household uses this code. It may have been reset, so ask a member for the latest one.",
   RATE_LIMITED: "Too many code attempts. Wait a few minutes, then try again.",
   OWNER_CANNOT_LEAVE: "You own this household, so you can't leave it.",
+  NOT_OWNER: "Only the owner can delete this household.",
   NOT_IN_HOUSEHOLD: "You're no longer in this household.",
   NOT_AUTHENTICATED: "Your session ended. Sign in again.",
   DUE_DATE_OUT_OF_MONTH: "Pick a due date inside this tracker's month.",

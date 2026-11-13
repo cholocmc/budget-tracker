@@ -32,7 +32,8 @@ export type DialogState =
   | { kind: "deleteExpense"; id: string }
   | { kind: "copy"; source: CopySource }
   | { kind: "settings" }
-  | { kind: "deleteTracker"; id: string };
+  | { kind: "deleteTracker"; id: string }
+  | { kind: "deleteHousehold" };
 
 export interface ExpenseInput {
   name: string;
@@ -47,6 +48,7 @@ export interface Ops {
   renameHousehold(name: string): Promise<string | null>;
   resetCode(): Promise<string | null>;
   leave(): Promise<string | null>;
+  deleteHousehold(): Promise<string | null>;
   ownedExpenseCount(): Promise<number>;
   signOut(): Promise<void>;
   saveCategory(input: { name: string; color: string }, original?: Category): Promise<string | null>;

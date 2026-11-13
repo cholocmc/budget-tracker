@@ -47,7 +47,11 @@ const ROWS_KEY = "finance-tracker-rows";
 const CONFLICT_MSG = "Someone else changed this expense. Review the latest version and try again.";
 const CATEGORY_CONFLICT_MSG = "Someone else changed this category. Review the latest version and try again.";
 
-type Screen = { kind: "app" } | { kind: "left"; household: string };
+type Screen =
+  | { kind: "app" }
+  | { kind: "left"; household: string }
+  /** The owner deleted the household (PRD §4.1). `by` is null when we deleted it ourselves. */
+  | { kind: "deleted"; household: string; by: string | null };
 
 export function TrackerApp({ initial }: { initial: InitialData }) {
   const sb = getSupabase();
@@ -84,6 +88,8 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
   const ownWrites = useRef(new Set<string>());
   const deletedByRef = useRef(new Map<string, string>());
   const loadingRef = useRef(new Set<string>());
+  /** Set once the household is being deleted, so its cascade of DELETE events doesn't toast. */
+  const householdGone = useRef(false);
 
   /* ---------- Client-only setup: local month, saved preferences ---------- */
   useEffect(() => {
@@ -201,6 +207,14 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
     void channelRef.current?.send({ type: "broadcast", event: "deleted", payload: { table, id, by: me } });
   };
 
+  /** The screen shown to members when the owner deletes the household. */
+  const deletedScreen = useCallback((): Screen => {
+    const s = stateRef.current;
+    if (s.household.owner_id === me) return { kind: "deleted", household: s.household.name, by: null };
+    const owner = s.members.find((m) => m.user_id === s.household.owner_id)?.display_name ?? "The owner";
+    return { kind: "deleted", household: s.household.name, by: owner };
+  }, [me]);
+
   /* ---------- Full refetch (after reconnecting) ---------- */
   const refreshAll = useCallback(async () => {
     const hid = stateRef.current.household.id;
@@ -213,7 +227,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
     if (!household) {
       // No longer readable: the user left this household from another device.
       const { data } = await sb.from("household_members").select("user_id").eq("user_id", me).maybeSingle();
-      if (!data) setScreen({ kind: "left", household: stateRef.current.household.name });
+      if (!data) setScreen(householdGone.current ? deletedScreen() : { kind: "left", household: stateRef.current.household.name });
       return;
     }
     const keep: Record<string, Expense[]> = {};
@@ -223,7 +237,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
       if (list) keep[t.id] = list;
     }
     dispatch({ type: "reset", household, members, categories, trackers, keep });
-  }, [sb, me, trackerFor]);
+  }, [sb, me, trackerFor, deletedScreen]);
 
   /* ---------- Realtime (PRD §6.6) ---------- */
   useEffect(() => {
@@ -239,7 +253,17 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
 
     ch.on("broadcast", { event: "deleted" }, ({ payload }) => {
       if (payload?.id && payload?.by) deletedByRef.current.set(payload.id, payload.by);
+      if (payload?.table === "households" && payload?.id === hid) householdGone.current = true;
     });
+    // The owner deleted the household: everything cascades, so stop listening and show the notice.
+    const onHouseholdGone = () => {
+      householdGone.current = true;
+      setDialog(null);
+      setScreen(deletedScreen());
+      window.scrollTo(0, 0);
+      if (channelRef.current) void sb.removeChannel(channelRef.current);
+      channelRef.current = null;
+    };
 
     // Expenses
     const onExpense = ({ new: row }: { new: Record<string, unknown> }) => {
@@ -262,7 +286,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
     ch.on("postgres_changes", { event: "UPDATE", ...filtered("categories") }, onCategory);
     ch.on("postgres_changes", { event: "DELETE", schema: "public", table: "categories" }, ({ old }) => {
       const id = old?.id as string | undefined;
-      if (!id) return;
+      if (!id || householdGone.current) return;
       const cat = stateRef.current.categories.find((c) => c.id === id);
       if (!cat) return; // Ours (already removed) or another household's.
       dispatch({ type: "removeCategory", id });
@@ -278,7 +302,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
     // Tracker deleted by another member (its expenses cascade; their DELETE events are no-ops after this).
     ch.on("postgres_changes", { event: "DELETE", schema: "public", table: "trackers" }, ({ old }) => {
       const id = old?.id as string | undefined;
-      const t = id ? stateRef.current.trackers.find((x) => x.id === id) : undefined;
+      const t = id && !householdGone.current ? stateRef.current.trackers.find((x) => x.id === id) : undefined;
       if (!t) return; // Ours (already removed) or another household's.
       const label = monthLabel(monthKey(t.year, t.month));
       const viewing = trackerFor(monthRef.current)?.id === t.id;
@@ -296,6 +320,11 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
       dispatch({ type: "household", patch: { name: h.name, code: h.code, owner_id: h.owner_id, updated_at: h.updated_at } });
     });
 
+    // DELETE events can't be filtered and carry only the primary key, so match by id.
+    ch.on("postgres_changes", { event: "DELETE", schema: "public", table: "households" }, ({ old }) => {
+      if (old?.id === hid) onHouseholdGone();
+    });
+
     // Members
     ch.on("postgres_changes", { event: "INSERT", ...filtered("household_members") }, () => void refreshMembers());
     ch.on("postgres_changes", { event: "UPDATE", ...filtered("household_members") }, () => void refreshMembers());
@@ -303,10 +332,12 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
       const uid = old?.user_id as string | undefined;
       if (!uid) return;
       if (uid === me) {
+        if (householdGone.current) return onHouseholdGone();
         setDialog(null);
         setScreen({ kind: "left", household: stateRef.current.household.name });
         return;
       }
+      if (householdGone.current) return;
       if (stateRef.current.members.some((m) => m.user_id === uid)) {
         dispatch({ type: "removeMember", userId: uid });
         void refreshMembers();
@@ -384,6 +415,26 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
         channelRef.current = null;
         setDialog(null);
         setScreen({ kind: "left", household: name });
+        window.scrollTo(0, 0);
+        return null;
+      },
+
+      async deleteHousehold() {
+        const s = stateRef.current;
+        if (s.household.owner_id !== me) return errorMessage({ message: "NOT_OWNER" });
+        // Tell the others first so the cascade of DELETE events shows one notice, not a toast per row.
+        householdGone.current = true;
+        announceDelete("households", s.household.id);
+        const { error } = await sb.rpc("delete_household");
+        if (error) {
+          householdGone.current = false;
+          deletedByRef.current.delete(s.household.id);
+          return errorMessage(error, "Couldn't delete the household. Try again.");
+        }
+        if (channelRef.current) await sb.removeChannel(channelRef.current);
+        channelRef.current = null;
+        setDialog(null);
+        setScreen({ kind: "deleted", household: s.household.name, by: null });
         window.scrollTo(0, 0);
         return null;
       },
@@ -641,6 +692,26 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
           <span className="eyebrow">Left household</span>
           <h2>You left {screen.household}</h2>
           <p>You no longer have access to its monthly trackers. Start your own household, or join another one with a household code.</p>
+          <div className="code-actions">
+            <a className="btn primary" href="/onboarding">Create a household</a>
+            <a className="btn" href="/onboarding?mode=join">Join with a code</a>
+          </div>
+        </section>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (screen.kind === "deleted") {
+    return (
+      <div className="wrap pg-tracker">
+        <section className="left-card">
+          <span className="eyebrow">Household deleted</span>
+          <h2>{screen.by ? `${screen.by} deleted ${screen.household}` : `You deleted ${screen.household}`}</h2>
+          <p>
+            {screen.by ? "Its monthly trackers, categories, and expenses are gone." : "Its monthly trackers, categories, and expenses are gone for every member."}{" "}
+            Start a new household, or join another one with a household code.
+          </p>
           <div className="code-actions">
             <a className="btn primary" href="/onboarding">Create a household</a>
             <a className="btn" href="/onboarding?mode=join">Join with a code</a>

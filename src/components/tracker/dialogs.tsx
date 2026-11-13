@@ -48,6 +48,8 @@ export function Dialogs({ dialog }: { dialog: DialogState }) {
       return <SettingsDialog />;
     case "deleteTracker":
       return <DeleteTrackerDialog id={dialog.id} />;
+    case "deleteHousehold":
+      return <DeleteHouseholdDialog />;
   }
 }
 
@@ -120,9 +122,64 @@ function DeleteTrackerDialog({ id }: { id: string }) {
   );
 }
 
+/* ---------- Delete the whole household (owner only, PRD §4.1) ---------- */
+function DeleteHouseholdDialog() {
+  const { state, me, ops, close } = useTracker();
+  const name = state.household.name;
+  const others = state.members.filter((m) => m.user_id !== me).length;
+  const months = state.trackers.length;
+  const [typed, setTyped] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState("");
+  const ok = typed.trim().toLowerCase() === name.toLowerCase();
+
+  const submit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!ok || busy) return;
+    setBusy(true);
+    const error = await ops.deleteHousehold();
+    if (error) {
+      setBusy(false);
+      setErr(error);
+    }
+  };
+
+  return (
+    <Modal title={`Delete ${name}?`} onClose={close} variant="danger" initialFocus="#dh-confirm">
+      <div className="warn-box">
+        <strong>Are you really sure?</strong> Deleting your household would put you
+        {others ? " and all the members" : ""} back to onboarding, so you either have to create a new household or join
+        another one.
+      </div>
+      <p>
+        {months
+          ? `This can't be undone. It deletes ${plural(months, "monthly tracker")}, every category, and every expense in ${name}.`
+          : `This can't be undone. It deletes ${name} and every category in it.`}
+      </p>
+      <form className="form" onSubmit={submit} noValidate>
+        <div className="field full">
+          <label htmlFor="dh-confirm" className="as-typed">
+            Type <b>&ldquo;{name}&rdquo;</b> to confirm
+          </label>
+          <input id="dh-confirm" autoComplete="off" placeholder={name} value={typed} onChange={(e) => { setTyped(e.target.value); setErr(""); }} />
+        </div>
+        <div className="err field full" role="alert">{err}</div>
+        <div className="modal-actions field full">
+          <button type="button" className="btn ghost" onClick={close}>Keep household</button>
+          <button type="submit" className="btn danger" disabled={!ok || busy}>
+            {busy ? "Deleting…" : "Delete household"}
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
 /* ---------- Settings: section order (saved per device) ---------- */
 function SettingsDialog() {
-  const { rows, setRows, close, open, tracker, expenses, month } = useTracker();
+  const { rows, setRows, close, open, tracker, expenses, month, state, me } = useTracker();
+  // Only the owner can delete the household (PRD §4.1).
+  const isOwner = state.household.owner_id === me;
   const [draft, setDraft] = useState<RowId[]>(rows);
   const [announce, setAnnounce] = useState("");
   const listRef = useRef<HTMLOListElement>(null);
@@ -204,6 +261,18 @@ function SettingsDialog() {
           </div>
           <button type="button" className="btn danger-outline" onClick={() => open({ kind: "deleteTracker", id: tracker.id })}>
             Delete tracker
+          </button>
+        </div>
+      )}
+      {isOwner && <div className="eyebrow">Household</div>}
+      {isOwner && (
+        <div className="leave-box">
+          <div>
+            <b>Delete {state.household.name}</b>
+            <p>Removes the household, every tracker, and every expense for all members.</p>
+          </div>
+          <button type="button" className="btn danger-outline" onClick={() => open({ kind: "deleteHousehold" })}>
+            Delete household
           </button>
         </div>
       )}
