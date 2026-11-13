@@ -595,6 +595,9 @@ body.resizing { cursor: col-resize; user-select: none; }
 .google-btn .spin { display: none; width: 16px; height: 16px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: spin .8s linear infinite; }
 .google-btn[aria-busy="true"] .spin { display: inline-block; }
 .gis-slot { min-height: 44px; display: flex; align-items: center; }
+/* Google's iframe document is light. If the iframe element's color-scheme differs (ours is dark),
+   the browser paints an opaque white backdrop behind it, showing as a white box around the button. */
+.gis-slot iframe { color-scheme: light; }
 
 /* ==========================================================================
    Onboarding page
