@@ -78,24 +78,44 @@ function GisButton() {
   useEffect(() => {
     listeners.add(setState);
     let alive = true;
+    let ready = false;
+    let rendered: boolean | null = null;
+    const mq = matchMedia("(prefers-color-scheme: light)");
+
+    // Google's button is an iframe that can't read our CSS, so pick its theme here and
+    // re-render it whenever the page theme flips (switch, system change, or another tab).
+    const render = () => {
+      if (!alive || !ready || !slot.current) return;
+      const attr = document.documentElement.getAttribute("data-theme");
+      const light = attr ? attr === "light" : mq.matches;
+      if (light === rendered) return;
+      rendered = light;
+      slot.current.replaceChildren();
+      window.google!.accounts.id.renderButton(slot.current, {
+        type: "standard",
+        theme: light ? "outline" : "filled_black",
+        size: "large",
+        text: "continue_with",
+        shape: "pill",
+        logo_alignment: "left",
+        width: 280,
+      });
+    };
+
+    const observer = new MutationObserver(render);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    mq.addEventListener?.("change", render);
+
     loadGis()
       .then(() => {
-        if (!alive || !slot.current) return;
-        const attr = document.documentElement.getAttribute("data-theme");
-        const light = attr ? attr === "light" : matchMedia("(prefers-color-scheme: light)").matches;
-        window.google!.accounts.id.renderButton(slot.current, {
-          type: "standard",
-          theme: light ? "outline" : "filled_black",
-          size: "large",
-          text: "continue_with",
-          shape: "pill",
-          logo_alignment: "left",
-          width: 280,
-        });
+        ready = true;
+        render();
       })
       .catch((e: Error) => alive && setState({ busy: false, error: e.message }));
     return () => {
       alive = false;
+      observer.disconnect();
+      mq.removeEventListener?.("change", render);
       listeners.delete(setState);
     };
   }, []);
