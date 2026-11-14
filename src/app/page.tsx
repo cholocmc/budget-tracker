@@ -3,6 +3,7 @@ import { Footer } from "@/components/Footer";
 import { GoogleSignIn } from "@/components/GoogleSignIn";
 import { LogoMark } from "@/components/Icons";
 import { PreviewCard } from "@/components/landing/PreviewCard";
+import { ProfilePreview } from "@/components/landing/ProfilePreview";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 
 const FEATURES = [
@@ -110,6 +111,25 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
               </article>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="p-title" style={{ paddingTop: 8 }}>
+        <div className="lwrap showcase">
+          <div className="sec-head">
+            <span className="eyebrow">Your private profile</span>
+            <h2 id="p-title">Every account, one total</h2>
+            <p>
+              Keep the balance of each bank and e-wallet you use on your own profile, and see your total across all of
+              them. Update a balance with one tap whenever it changes.
+            </p>
+            <ul className="checks">
+              <li>Only you can see it. Other household members can&apos;t.</li>
+              <li>See each account&apos;s share of your total</li>
+              <li>Separate from your household&apos;s budget</li>
+            </ul>
+          </div>
+          <ProfilePreview />
         </div>
       </section>
 

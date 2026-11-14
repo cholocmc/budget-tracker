@@ -105,7 +105,7 @@ Routing rules:
    - Every expense owned by the leaving member, in all months, is **reassigned to the household owner**. Nothing is deleted.
    - Coming back requires the household code, which may have been reset in the meantime.
    - After leaving, the user sees a "You left {household}" screen with **Create a household** and **Join with a code**, both of which go to onboarding.
-5. **Household name rules:**
+6. **Household name rules:**
    - On creation: required, trimmed, 2–50 characters.
    - On rename: required, trimmed, at most 50 characters. If the name is unchanged, nothing is saved.
 6. **Deleting a household (owner only):**
@@ -341,12 +341,16 @@ These are stored per browser in localStorage, not in Supabase:
    - Budget vs actual, in one chart: category summary with remaining totals; overspending shows in red.
    - Table or list, your call: sort by category, owner, due date, or amount; filter to a single category.
    - One household, shared: share your household code; every member can add, edit, and delete; each person belongs to one household; works on phone and desktop, light or dark.
-4. **Getting started**, three numbered steps:
+4. **Private profile**, between the features and the steps:
+   - Eyebrow "Your private profile", heading "Every account, one total", and the copy "Keep the balance of each bank and e-wallet you use on your own profile, and see your total across all of them. Update a balance with one tap whenever it changes."
+   - Three points: "Only you can see it. Other household members can't.", "See each account's share of your total", "Separate from your household's budget".
+   - A **profile preview card** beside the copy (stacked under it below 960px), tagged "Example data": the total balance, the distribution bar, five example accounts with their share bars and balances, and "Only you can see your accounts." The example accounts are made up, never a real user's data.
+5. **Getting started**, three numbered steps:
    1. **Sign in with Google**: no new password to remember.
    2. **Create or join a household**: start a new household and share its code with the people who split your bills. Got a code from someone? Enter it to join their household instead.
    3. **Plan the month**: add categories and expenses, log payments as they happen, and next month copy the recurring ones over.
-5. **Closing band:** "Your first tracker opens on {current Month Year}", followed by a second **Continue with Google** button.
-6. **Footer:** see §6.5.
+6. **Closing band:** "Your first tracker opens on {current Month Year}", followed by a second **Continue with Google** button.
+7. **Footer:** see §6.5.
 
 **Google button:**
 - In production, use **Google Identity Services' official "Sign in with Google" button**. The prototype uses a neutral icon on purpose, so as not to reproduce Google's logo by hand.
