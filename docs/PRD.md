@@ -3,7 +3,7 @@
 **Owner:** Cholo (CholoCMC)
 **Status:** Ready for build. All three pages are designed and prototyped. All questions are resolved (§11).
 **Stack:** Next.js + Tailwind CSS (frontend), Supabase (auth, Postgres, realtime)
-**Last updated:** November 10, 2026
+**Last updated:** November 14, 2026
 
 ---
 
@@ -64,6 +64,7 @@ Landing page ──(Continue with Google)──► Google OAuth
 
 Routing rules:
 - An unauthenticated visitor to any app route is redirected to the landing page.
+- `/profile` (§6.7) is open to every signed-in user, with or without a household. It's reached from the account menu in the tracker header.
 - An authenticated user with no household always lands on onboarding.
 - An authenticated user with a household who opens onboarding or the landing page is redirected to the tracker.
 
@@ -80,6 +81,7 @@ Routing rules:
 | **Monthly tracker** | The container for one month's expenses in a household. It is identified by year and month. |
 | **Category** | A household-wide grouping for expenses, such as Bills, Insurance, or Medicine. Categories are shared across all months. |
 | **Expense** | One line item in a monthly tracker. |
+| **Account** | A bank or e-wallet on a user's profile, with its current balance (§6.7). Accounts belong to the user, not the household, and only that user can see them. |
 
 ---
 
@@ -252,8 +254,23 @@ create index on expenses (household_id);
 create index on expenses (category_id);
 ```
 
+```sql
+-- Profile accounts (§6.7). Owned by the user, not the household, so household and tracker
+-- deletions never touch them.
+create table bank_accounts (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  name          text not null check (char_length(btrim(name)) between 1 and 40),
+  balance_cents bigint not null default 0 check (balance_cents >= 0),
+  color         text not null,  -- one of the §9.3 palette
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+create unique index bank_accounts_user_name_ci on bank_accounts (user_id, lower(name));
+```
+
 Triggers to add:
-- `updated_at` is set to `now()` on every update of `households`, `categories`, and `expenses`.
+- `updated_at` is set to `now()` on every update of `households`, `categories`, `expenses`, and `bank_accounts`.
 - `expenses`:
   - Before insert or update, check that `due_date` falls within the tracker's year and month.
   - Check that `household_id` matches the tracker's household and the category's household.
@@ -282,6 +299,7 @@ $$;
 | `categories` | `household_id = my_household_id()` | Same condition, for all members |
 | `trackers` | `household_id = my_household_id()` | Insert through `create_tracker` and delete through `delete_tracker` only. No update. |
 | `expenses` | `household_id = my_household_id()` | Same condition, for all members |
+| `bank_accounts` | `user_id = auth.uid()` | Same condition. Only the owner of a row can see or change it, household members included. `user_id` can't be updated. |
 
 The household `code` column must only be readable by members. The lookup for people joining goes through the `lookup_household` RPC, which returns the name, owner, and members but never lists codes.
 
@@ -396,7 +414,8 @@ These are stored per browser in localStorage, not in Supabase:
 - **Invite** button, which opens the household code dialog.
 - **Light mode** switch.
 - **Settings** button (gear icon), which opens the **Settings** dialog.
-- **Sign out** button.
+- **Account menu**: your own avatar, at the right end of the row. It opens a menu with your name, **Profile** (goes to `/profile`, §6.7), and **Sign out**. Esc or a click outside closes it, and arrow keys move between the items.
+- The member avatar group shows the **other** members, since your own avatar is the account menu. When you're the only member, the group is hidden.
 - On phones, the button labels are hidden and only icons show; the controls stay on one row.
 
 **Settings dialog:**
@@ -438,7 +457,7 @@ These are stored per browser in localStorage, not in Supabase:
 - Note: "Someone who already belongs to another household can't use this code until they leave it."
 - The member list is shown below.
 
-**Sign out:**
+**Sign out** (from the account menu):
 - Ends the session.
 - Shows a "You're signed out" screen: "Your household and its trackers are saved. Sign in with Google again to pick up where you left off." It has a link to the landing page.
 
@@ -606,6 +625,50 @@ Any change made by one member must appear for every other member who has the tra
 
 ---
 
+### 6.7 Profile page (`/profile`)
+
+A private page where each user keeps the balances of their banks and e-wallets. It is separate from the tracker: it doesn't feed any tracker numbers, and deleting a tracker, leaving a household, or deleting a household never changes it.
+
+**Privacy:** only the signed-in user can see their accounts. Other members of their household can't (§5.2).
+
+**Header:**
+- A back button that goes to `/tracker` ("Back to tracker"), or to `/onboarding` when the user has no household.
+- The logo, the title "Profile", and the subtitle "{household} · Budget tracker" ("Budget Mate" with no household).
+- The light mode switch and a **Sign out** button.
+
+**You card** (left column on desktop, on top on phones):
+- Avatar, display name, and "Owner of {household}", "Member of {household}", or "Not in a household".
+- **Total balance**: the sum of every account, with "Across N account(s) · last updated {when}".
+- A distribution bar: one segment per account with a balance above zero, sized by its share of the total, in the account's color. Hovering an account row highlights its segment.
+- A legend with the four largest accounts and their share ("42.1%"), plus "N others" for the rest.
+- Note: "Only you can see your accounts. Other members of {household} can't." ("Nobody else can see your accounts." with no household).
+
+**Accounts card:**
+- Title "Accounts", subtitle "Banks and e-wallets you keep money in. Tap a balance to update it."
+- A sort dropdown: **Highest balance** (default), **Name A–Z**, **Recently updated**. It isn't saved.
+- **Add account** button (primary).
+- Each row: a tile with the account's initials in its color, the name, "Updated {when}", a share bar with its percentage of the total, the balance, and edit/delete buttons.
+  - "{when}" is "today", "yesterday", "N days ago" up to 13 days, then a date ("Nov 3"), in local time.
+- **Updating a balance:** clicking the balance turns it into a money input in place, with Save (✓) and Cancel (×) buttons. Enter saves; Esc or Cancel restores it. An unchanged amount saves nothing. Toast: "Updated {name} to {amount}".
+- **Empty state:** "No accounts yet" / "Add the banks and e-wallets you use to see your total balance in one place." with an **Add account** button.
+- On phones each row takes two lines: tile, name, and balance on top; share bar and actions below.
+
+**Account dialog (add and edit):**
+- Title "Add account" or "Edit {name}".
+- Fields:
+  - Account name: required, trimmed, at most 40 characters, unique per user ignoring case.
+  - Balance: a money input as in §6.3.6, zero or more. Blank means ₱0.00.
+  - Color: the §9.3 swatches. New accounts take the first color the user's accounts don't already use.
+- Errors: "Enter a name for this account.", "You already have an account called {name}.", "Amounts must be zero or more."
+- Toasts: "Added {name}", "Saved {name}".
+
+**Delete dialog:**
+- Title "Delete {name}?". A warning box: "This can't be undone." then "{name} and its {balance} balance come off your profile. Your total goes from {total} to {new total}."
+- Note: "This only removes it from Budget Mate. Nothing changes at your bank."
+- Buttons: **Keep account** and **Delete account** (danger). Toast: "Deleted {name}".
+
+**Saving:** writes are optimistic and roll back on error. Updates keep the `updated_at` guard; when no row matches, the list reloads with the message "This account changed in another tab. Showing the latest balance." This page has no live sync.
+
 ## 7. Edge cases checklist
 
 | Area | Case | Expected behaviour |
@@ -654,6 +717,7 @@ Any change made by one member must appear for every other member who has the tra
 - expenses: list, insert, update, delete
 - trackers: list
 - household: rename
+- bank accounts (§6.7): list, insert, update, delete, each limited to the caller's own rows
 
 **Multi-step or sensitive operations** run as Postgres functions (`security definer`, with `search_path` set), called with `supabase.rpc()`. Each runs in a single transaction and checks `auth.uid()` itself.
 
@@ -686,6 +750,7 @@ Implementation notes:
   - `/onboarding`
   - `/tracker`, which opens on the current month, and `/tracker/[yyyy-mm]` for a specific month.
   - `/auth/callback`
+  - `/profile` (§6.7)
   - Middleware enforces the redirects in §2.
 - **Types:** generate TypeScript types with `supabase gen types typescript`.
 - **Migrations:** keep every schema change, RLS policy, trigger, and function in `supabase/migrations`.
@@ -783,6 +848,7 @@ The prototypes include **prototype-only scaffolding that must not ship:**
 | Deleting trackers | **Available to every member**, from Settings, with a typed confirmation. Deletes the month's expenses; categories stay. |
 | Household code expiry | **Codes never expire** and have no usage limit. They change only when a member resets them. |
 | Currency | **PHP (₱) only.** |
+| Profile accounts | **Private to each user** and separate from the household: no tracker numbers use them, and household or tracker deletions don't touch them. Manual balances only (no bank syncing), zero or more, with no account type. |
 | "Last edited by" on expenses | **Not shown.** `created_by` and `updated_by` stay in the schema for record-keeping and for the realtime conflict notices (§6.6), but no screen displays them. |
 
 There are no open questions left.
@@ -810,6 +876,7 @@ There are no open questions left.
 - [ ] The table/list toggle is saved. Table sorting works on the six columns, with a dropdown on mobile. The category filter works.
 - [ ] The chart/summary split is resizable on desktop (28–70%, default 42%), keyboard accessible, and saved.
 - [ ] Light/dark mode follows the system until toggled, is saved, and is consistent across pages.
+- [ ] The profile page lists the user's accounts with a total and supports add, edit, inline balance update, and delete. Nobody else can read those rows, and deleting a tracker or the household leaves them unchanged.
 - [ ] The "Made by CholoCMC" footer on every page links to https://www.cholocmc.com.
 - [ ] Every page passes a mobile review at 360–400px: no horizontal scroll, stacked tables, bottom-sheet dialogs, and touch-sized targets.
 - [ ] No prototype-only scaffolding from §10 ships.

@@ -86,3 +86,13 @@ export interface InitialData {
   /** Expenses for prefetchedMonth, or null when they still need loading. */
   initialExpenses: Expense[] | null;
 }
+
+/** A bank or e-wallet on the user's profile (PRD §6.7). Private to its owner. */
+export interface BankAccount {
+  id: string;
+  name: string;
+  balance_cents: number;
+  color: string;
+  created_at: string;
+  updated_at: string;
+}

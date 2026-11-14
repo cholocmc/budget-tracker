@@ -38,10 +38,11 @@ npm run build       # production build; run before you consider work done
 |---|---|
 | `supabase/migrations/` | Schema, triggers, RLS, RPCs, and realtime publication |
 | `src/proxy.ts` | Session refresh and redirects (PRD §2) |
-| `src/app/` | Routes: `/`, `/onboarding`, `/tracker/[[...month]]`, `/auth/callback`, `/signed-out` |
+| `src/app/` | Routes: `/`, `/onboarding`, `/tracker/[[...month]]`, `/profile`, `/auth/callback`, `/signed-out` |
 | `src/components/tracker/` | Tracker client app |
+| `src/components/profile/` | Profile page: the user's private bank accounts (PRD §6.7) |
 | `src/components/onboarding/`, `src/components/landing/` | Page-specific client components |
-| `src/components/` | Shared UI: `Modal`, `Toast`, `ThemeSwitch`, `GoogleSignIn`, `Icons`, `Footer` |
+| `src/components/` | Shared UI: `Modal`, `Toast`, `ThemeSwitch`, `AccountMenu`, `GoogleSignIn`, `Icons`, `Footer` |
 | `src/lib/format.ts` | Months, dates, money, codes, initials, derived status |
 | `src/lib/data.ts` | Supabase queries shared by the server page and the client |
 | `src/lib/errors.ts` | Maps RPC error codes to user-facing messages |
@@ -63,7 +64,8 @@ Files in `src/components/tracker/`:
 ### Database
 
 - **Every schema change is a new migration file** in `supabase/migrations/`. Never edit a migration that has already been applied; add a new one.
-- **RLS stays on for every table.** New tables need policies scoped with `public.my_household_id()`.
+- **RLS stays on for every table.** New household tables need policies scoped with `public.my_household_id()`.
+  - `bank_accounts` is the exception: it's personal, not household data. Its policy is `user_id = auth.uid()`, and it references `auth.users`, not `households`, so household and tracker deletions never touch it (PRD §6.7).
 - **Multi-step or sensitive writes go through RPCs** (`security definer`, `set search_path`), and each checks `auth.uid()` itself. These include:
   - household create, join, and leave
   - code reset
@@ -113,7 +115,7 @@ Files in `src/components/tracker/`:
 - **Design tokens are CSS variables** on `:root` in `globals.css`, flipped for light mode by `data-theme` or `prefers-color-scheme`.
   - Use the variables, or the Tailwind colors mapped to them (`bg-surface`, `text-muted`, `border-line`, …).
   - Don't hard-code hex colors, except the category palette (`PALETTE`) and the logo gradient.
-- **Page-specific CSS is scoped** under `.pg-landing`, `.pg-onboarding`, and `.pg-tracker`.
+- **Page-specific CSS is scoped** under `.pg-landing`, `.pg-onboarding`, `.pg-tracker`, and `.pg-profile`.
   - Dialog styles stay global because dialogs render in a portal.
 - **Mobile is required:**
   - no horizontal scroll from 360px up

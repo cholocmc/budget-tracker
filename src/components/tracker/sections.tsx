@@ -5,7 +5,6 @@ import {
   IconEdit,
   IconLeft,
   IconList,
-  IconLogout,
   IconPlus,
   IconRight,
   IconSettings,
@@ -14,6 +13,7 @@ import {
   IconUserPlus,
   LogoMark,
 } from "@/components/Icons";
+import { AccountMenu } from "@/components/AccountMenu";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { arcPath } from "@/lib/chart";
 import {
@@ -38,6 +38,8 @@ import { SPLIT_DEFAULT, SPLIT_MAX, SPLIT_MIN } from "./context";
 export function Header() {
   const { state, me, open, ops, memberIndex, online, connected } = useTracker();
   const ms = state.members;
+  const others = ms.filter((m) => m.user_id !== me);
+  const myName = ms.find((m) => m.user_id === me)?.display_name ?? "You";
   return (
     <header className="top">
       <div className="brand">
@@ -56,20 +58,23 @@ export function Header() {
         </div>
       </div>
       <div className="members">
-        <button
-          type="button"
-          className="avatars avatars-btn"
-          aria-label="Household members"
-          title={ms.map((m) => (m.user_id === me ? "You" : m.display_name)).join(", ")}
-          onClick={() => open({ kind: "members" })}
-        >
-          {ms.map((m) => (
-            <span key={m.user_id} className="av" style={{ background: memberColor(memberIndex(m.user_id)) }}>
-              {initials(m.display_name)}
-              {online.has(m.user_id) && m.user_id !== me && <span className="online" aria-hidden="true" />}
-            </span>
-          ))}
-        </button>
+        {/* Your own avatar is the account menu at the end, so the group shows the other members (PRD §6.3.1). */}
+        {others.length > 0 && (
+          <button
+            type="button"
+            className="avatars avatars-btn"
+            aria-label="Household members"
+            title={ms.map((m) => (m.user_id === me ? "You" : m.display_name)).join(", ")}
+            onClick={() => open({ kind: "members" })}
+          >
+            {others.map((m) => (
+              <span key={m.user_id} className="av" style={{ background: memberColor(memberIndex(m.user_id)) }}>
+                {initials(m.display_name)}
+                {online.has(m.user_id) && <span className="online" aria-hidden="true" />}
+              </span>
+            ))}
+          </button>
+        )}
         <button type="button" className="btn" aria-label="Invite members" onClick={() => open({ kind: "invite" })}>
           <IconUserPlus />
           <span className="lbl">Invite</span>
@@ -79,10 +84,7 @@ export function Header() {
           <IconSettings />
           <span className="lbl">Settings</span>
         </button>
-        <button type="button" className="btn ghost signout" aria-label="Sign out" title="Sign out" onClick={() => void ops.signOut()}>
-          <IconLogout />
-          <span className="lbl">Sign out</span>
-        </button>
+        <AccountMenu name={myName} color={memberColor(memberIndex(me))} onSignOut={() => void ops.signOut()} />
       </div>
     </header>
   );

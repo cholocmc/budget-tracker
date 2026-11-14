@@ -28,6 +28,7 @@ export async function proxy(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const isTracker = path === "/tracker" || path.startsWith("/tracker/");
   const isOnboarding = path === "/onboarding";
+  const isProfile = path === "/profile";
   const isLanding = path === "/";
 
   const redirectTo = (target: string) => {
@@ -40,8 +41,9 @@ export async function proxy(request: NextRequest) {
   };
 
   if (!userId) {
-    return isTracker || isOnboarding ? redirectTo("/") : response;
+    return isTracker || isOnboarding || isProfile ? redirectTo("/") : response;
   }
+  // /profile is open to every signed-in user, with or without a household (PRD §6.7).
 
   // The tracker page looks up the membership itself and redirects to /onboarding without one,
   // so the proxy skips that duplicate query to keep it off the tracker's critical path.

@@ -79,6 +79,20 @@ export const fmtCreated = (ts: string) => {
   if (!ts || Number.isNaN(d.getTime())) return "—";
   return `${MONTHS[d.getMonth()].slice(0, 3)} ${d.getDate()}`;
 };
+/**
+ * "today", "yesterday", "3 days ago" up to 13 days, then "Nov 3", counted in local calendar days
+ * (profile accounts, PRD §6.7).
+ */
+export const fmtSince = (ts: string, now: Date) => {
+  const d = new Date(ts);
+  if (!ts || Number.isNaN(d.getTime())) return "—";
+  const startOf = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+  const days = Math.round((startOf(now) - startOf(d)) / 86_400_000);
+  if (days <= 0) return "today";
+  if (days === 1) return "yesterday";
+  if (days < 14) return `${days} days ago`;
+  return fmtCreated(ts);
+};
 /** The same day of month in another month, clamped to that month's last day. */
 export const shiftDue = (iso: string, targetMonth: string) => {
   const d = Math.min(parseInt(iso.slice(8, 10), 10) || 1, lastDayOf(targetMonth));

@@ -461,6 +461,117 @@ body.resizing { cursor: col-resize; user-select: none; }
   .seg button { padding: 8px 14px; }
 }
 
+/* Account menu: your avatar at the end of the tracker header (PRD §6.3.1) */
+.acct { position: relative; flex: none; }
+.acct-btn { background: none; border: 0; padding: 3px; cursor: pointer; border-radius: 999px; display: flex; }
+.acct-btn .av { margin: 0; border-color: var(--bg); box-shadow: 0 0 0 1px var(--line-strong); transition: box-shadow .15s; }
+.acct-btn:hover .av, .acct-btn[aria-expanded="true"] .av { box-shadow: 0 0 0 2px var(--accent); }
+.acct-menu { position: absolute; right: 0; top: calc(100% + 8px); z-index: 30; min-width: 220px; max-width: calc(100vw - 32px);
+  background: var(--surface); border: 1px solid var(--line-strong); border-radius: 12px; box-shadow: var(--shadow); padding: 6px;
+  display: flex; flex-direction: column; gap: 2px; }
+.acct-head { padding: 8px 10px 10px; border-bottom: 1px solid var(--line); margin-bottom: 4px; display: flex; flex-direction: column; min-width: 0; }
+.acct-head b { font-weight: 600; font-size: 14px; overflow-wrap: anywhere; }
+.acct-head span { font-size: 12px; color: var(--muted); }
+.acct-item { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 40px; padding: 8px 10px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--fg); font-size: 14px; text-decoration: none; cursor: pointer; text-align: left; }
+.acct-item svg { color: var(--muted); }
+.acct-item:hover, .acct-item:focus-visible { background: var(--surface-2); }
+.acct-item:focus-visible { outline-offset: -2px; }
+
+/* ==========================================================================
+   Profile page (PRD §6.7)
+   ========================================================================== */
+.pg-profile {
+  max-width: 1120px;
+  .brand h1 { font-size: 22px; }
+  .back-btn { width: 40px; height: 40px; }
+  .profile-cols { display: grid; grid-template-columns: minmax(280px, 360px) minmax(0, 1fr); gap: 20px; align-items: start; }
+
+  /* You card */
+  .me-card { gap: 18px; }
+  .who { display: flex; align-items: center; gap: 14px; min-width: 0; }
+  .who .av { width: 52px; height: 52px; font-size: 17px; margin: 0; border: 0; box-shadow: 0 0 0 3px var(--surface), 0 0 0 4px var(--line-strong); }
+  .who-name { font-family: var(--font-display); font-weight: 600; font-size: 18px; overflow-wrap: anywhere; }
+  .who-meta { font-size: 13px; color: var(--muted); overflow-wrap: anywhere; }
+  .total { display: flex; flex-direction: column; gap: 4px; padding-top: 16px; border-top: 1px solid var(--line); }
+  .total-val { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: clamp(26px, 3.4vw, 34px); font-weight: 600; letter-spacing: -.02em; line-height: 1.15; overflow-wrap: anywhere; }
+  .total-foot { font-size: 13px; color: var(--muted); }
+  .dist { display: flex; gap: 2px; height: 12px; border-radius: 999px; overflow: hidden; background: var(--surface-2); }
+  .dist span { display: block; min-width: 3px; transition: opacity .15s; }
+  .dist span.dim { opacity: .25; }
+  .dist-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .dist-legend li { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); min-width: 0; }
+  .dist-legend .sw { width: 10px; height: 10px; border-radius: 3px; }
+  .dist-legend .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .dist-legend .p { margin-left: auto; font-family: var(--font-mono); font-variant-numeric: tabular-nums; color: var(--fg); }
+  .private-note { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border-radius: var(--r-sm); background: var(--surface-2); border: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .private-note svg { margin-top: 2px; color: var(--accent); }
+
+  /* Accounts card */
+  .acc-panel { padding: 0; gap: 0; overflow: hidden; }
+  .acc-panel .panel-head { padding: 16px 20px; border-bottom: 1px solid var(--line); }
+  .panel-sub { font-size: 13px; color: var(--muted); }
+  .acc-tools { display: flex; align-items: center; gap: 8px; }
+  .acc-panel .empty { border: 0; border-radius: 0; }
+  .acc-list { list-style: none; margin: 0; padding: 0; }
+  .acc-list li { display: grid; grid-template-columns: 40px minmax(0, 1.6fr) minmax(56px, 1fr) auto 72px; align-items: center; gap: 14px;
+    padding: 12px 20px; border-bottom: 1px solid var(--line); transition: background .15s; }
+  .acc-list li:last-child { border-bottom: 0; }
+  .acc-list li.on { background: var(--surface-2); }
+  .acc-tile { width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; font-family: var(--font-mono); font-weight: 600; font-size: 12px; color: #03140C; }
+  .acc-name { display: flex; flex-direction: column; min-width: 0; }
+  .acc-name .nm { font-weight: 600; overflow-wrap: anywhere; }
+  .acc-name .meta { font-size: 12.5px; color: var(--muted); }
+  .acc-share { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .share-bar { display: block; height: 5px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+  .acc-list li.on .share-bar { background: var(--line); }
+  .share-bar i { display: block; height: 100%; min-width: 2px; border-radius: 999px; }
+  .acc-share .pct { font-family: var(--font-mono); font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .acc-bal { justify-self: end; display: flex; align-items: center; min-width: 0; }
+  .bal-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 6px 8px; border: 1px dashed transparent; border-radius: 8px;
+    background: transparent; cursor: pointer; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 15px; font-weight: 600; white-space: nowrap; }
+  .bal-btn svg { opacity: 0; color: var(--muted); transition: opacity .15s; }
+  .bal-btn:hover, .bal-btn:focus-visible { border-color: var(--line-strong); }
+  .bal-btn:hover svg, .bal-btn:focus-visible svg { opacity: 1; }
+  .bal-btn:disabled { cursor: progress; opacity: .6; }
+  .bal-edit { display: flex; align-items: center; gap: 4px; }
+  .bal-edit .money input { width: 168px; max-width: 100%; background: var(--surface-2); border: 1px solid var(--accent); border-radius: var(--r-sm);
+    padding: 8px 10px 8px 28px; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 15px; text-align: right; box-shadow: 0 0 0 3px var(--accent-soft); }
+  .bal-edit .money input:focus { outline: none; }
+  .bal-edit .money input[aria-invalid="true"] { border-color: var(--danger); box-shadow: 0 0 0 3px var(--danger-soft); }
+  .icon-btn.ok { color: var(--accent); border-color: var(--accent); }
+  /* While editing, the editor takes the share column's space so the name keeps its width. */
+  @media (min-width: 641px) {
+    .acc-list li:has(.bal-edit) .acc-share { display: none; }
+    .acc-list li:has(.bal-edit) .acc-bal { grid-column: 3 / 5; }
+  }
+
+  @media (max-width: 900px) {
+    .profile-cols { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 640px) {
+    .brand h1 { font-size: 19px; }
+    .acc-panel .panel-head { padding: 14px; }
+    .acc-tools { width: 100%; }
+    .acc-tools .select { flex: 1 1 auto; min-width: 0; font-size: 16px; }
+    .acc-tools .btn.primary { flex: none; }
+    .acc-list li { grid-template-columns: 40px minmax(0, 1fr) auto; grid-template-areas: "tile name bal" "share share acts"; gap: 8px 12px; padding: 12px 14px; }
+    .acc-tile { grid-area: tile; }
+    .acc-name { grid-area: name; }
+    .acc-bal { grid-area: bal; }
+    .acc-share { grid-area: share; flex-direction: row; align-items: center; gap: 10px; }
+    .acc-share .share-bar { flex: 1; }
+    .row-actions { grid-area: acts; }
+    .bal-btn svg { opacity: 1; }
+    /* The inline editor takes the whole top row on phones. */
+    .acc-list li:has(.bal-edit) { grid-template-areas: "tile name name" "bal bal bal" "share share acts"; }
+    .acc-list li:has(.bal-edit) .acc-bal { justify-self: stretch; }
+    .bal-edit { width: 100%; }
+    .bal-edit .money { flex: 1; min-width: 0; }
+    .bal-edit .money input { width: 100%; font-size: 16px; }
+  }
+}
+
 /* ==========================================================================
    Landing page
    ========================================================================== */

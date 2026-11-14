@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Category, Expense, Household, Member, Tracker } from "./types";
+import type { BankAccount, Category, Expense, Household, Member, Tracker } from "./types";
 
 // Shared queries, used by the server page (initial load) and the client (refetch after reconnect).
 
@@ -98,4 +98,18 @@ export function normalizeExpense(row: Record<string, unknown>): Expense {
     budgeted_cents: Number(row.budgeted_cents ?? 0),
     actual_cents: Number(row.actual_cents ?? 0),
   };
+}
+
+/* ---------- Profile accounts (PRD §6.7). RLS returns only the caller's own rows. ---------- */
+
+export const BANK_ACCOUNT_COLUMNS = "id, name, balance_cents, color, created_at, updated_at";
+
+export async function fetchBankAccounts(sb: SupabaseClient): Promise<BankAccount[] | null> {
+  const { data, error } = await sb.from("bank_accounts").select(BANK_ACCOUNT_COLUMNS).order("created_at", { ascending: true });
+  if (error) return null;
+  return (data ?? []).map(normalizeBankAccount);
+}
+
+export function normalizeBankAccount(row: Record<string, unknown>): BankAccount {
+  return { ...(row as unknown as BankAccount), balance_cents: Number(row.balance_cents ?? 0) };
 }
