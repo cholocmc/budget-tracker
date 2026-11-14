@@ -337,6 +337,7 @@ body.resizing { cursor: col-resize; user-select: none; }
 .pg-tracker th[aria-sort="ascending"], .pg-tracker th[aria-sort="descending"] { color: var(--accent); }
 .pg-tracker th[aria-sort="ascending"] .arr, .pg-tracker th[aria-sort="descending"] .arr { opacity: 1; }
 .sort-select { display: none; }
+.sort-select.show { display: block; } /* List view has no column headers, so it always needs the dropdown */
 
 /* Expenses toolbar */
 .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -352,16 +353,24 @@ body.resizing { cursor: col-resize; user-select: none; }
 .groups { display: flex; flex-direction: column; gap: 14px; }
 .group { border: 1px solid var(--line); border-radius: var(--r-sm); overflow: hidden; }
 .group-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; background: var(--surface-2); flex-wrap: wrap; }
-.group-head h3 { font-size: 15px; display: flex; align-items: center; gap: 10px; }
-.group-head .tot { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
-.item { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px 14px; padding: 12px 14px; border-top: 1px solid var(--line); }
+.group-head h3 { font-size: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.group-head h3 .cnt { font-family: var(--font-mono); font-size: 11.5px; font-weight: 400; color: var(--faint); }
+.group-head .tot { font-family: var(--font-mono); font-size: 12px; color: var(--muted); display: inline-flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.group-head .tot .pos { color: var(--accent); }
+.group-head .tot .neg { color: var(--danger); font-weight: 600; }
+/* Compact rows: the two money columns line up across rows because their widths are fixed. */
+.item { display: grid; grid-template-columns: minmax(0,1fr) 8.5rem 8rem auto; align-items: center; gap: 4px 16px; padding: 9px 8px 9px 14px; border-top: 1px solid var(--line); }
 .item:first-of-type { border-top: 0; }
-.item .meta { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); align-items: center; }
-.item .amt { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 14px; }
+.item:hover { background: var(--surface-2); }
+.item-main { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.item .meta { display: flex; gap: 6px 12px; flex-wrap: wrap; font-size: 12.5px; color: var(--muted); align-items: center; }
+.item .meta .owner .av { width: 20px; height: 20px; font-size: 9px; }
+.item .meta .pill { padding: 1px 8px; font-size: 11.5px; }
+.item .amt { text-align: right; font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-size: 14px; white-space: nowrap; }
 .item .amt small { display: block; color: var(--muted); font-size: 11.5px; }
-.item .bar { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; }
-.item .bar .meter { flex: 1; }
-.item .bar .row-actions { flex: none; }
+.item .amt.rem.neg { color: var(--danger); }
+.item .amt.rem.zero { color: var(--faint); }
+.item.is-settled .exp-name { color: var(--muted); }
 
 /* Empty states */
 .empty { border: 1px dashed var(--line-strong); border-radius: var(--r); padding: 40px 20px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; color: var(--muted); }
@@ -436,8 +445,12 @@ body.resizing { cursor: col-resize; user-select: none; }
   .pg-tracker table.stack td.empty-cell { display: none; }
   .pg-tracker table.stack tfoot td.lead { font-family: var(--font-display); }
 
-  .item { grid-template-columns: minmax(0,1fr); }
-  .item .amt { text-align: left; }
+  /* Phones: name and actions on top, actual and left side by side underneath. */
+  .item { grid-template-columns: minmax(0,1fr) auto; grid-template-areas: "main act" "amt rem"; row-gap: 8px; padding: 12px 6px 12px 12px; }
+  .item-main { grid-area: main; }
+  .item .row-actions { grid-area: act; align-self: start; }
+  .item .amt { grid-area: amt; text-align: left; }
+  .item .amt.rem { grid-area: rem; text-align: right; padding-right: 8px; }
 
   .form { grid-template-columns: 1fr; }
   .field input, .field select, .select, .month-input { font-size: 16px; } /* stops iOS zoom on focus */

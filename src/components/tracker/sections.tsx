@@ -622,24 +622,32 @@ export function ExpensesSection() {
           const items = sorted.filter((x) => x.category_id === c.id);
           const b = items.reduce((s, x) => s + x.budgeted_cents, 0);
           const a = items.reduce((s, x) => s + x.actual_cents, 0);
+          const settled = items.filter((x) => statusOf(x)[0] === "settled").length;
           return (
             <div className="group" key={c.id}>
               <div className="group-head">
                 <h3>
                   <span className="sw" style={{ background: c.color }} />
                   {c.name}
+                  <span className="cnt">
+                    {settled}/{items.length} settled
+                  </span>
                 </h3>
                 <span className="tot">
                   {fmtCents(a)} of {fmtCents(b)}
+                  <span className={a > b ? "neg" : "pos"}>
+                    {a > b ? `over by ${fmtCents(a - b)}` : `${fmtCents(b - a)} left`}
+                  </span>
                 </span>
               </div>
+              {/* One compact row per expense (PRD §6.3.6): name and meta, actual of budgeted, what's left, actions. */}
               {items.map((x) => {
                 const bb = x.budgeted_cents;
                 const aa = x.actual_cents;
-                const p = bb ? Math.min(100, (aa / bb) * 100) : aa > 0 ? 100 : 0;
+                const rem = bb - aa;
                 return (
-                  <div className="item" key={x.id}>
-                    <div>
+                  <div className={`item is-${statusOf(x)[0]}`} key={x.id}>
+                    <div className="item-main">
                       <div className="exp-name">{x.name}</div>
                       <div className="meta">
                         <span className="mono">Due {fmtDue(x.due_date)}</span>
@@ -649,16 +657,13 @@ export function ExpensesSection() {
                     </div>
                     <div className="amt">
                       {fmtCents(aa)}
-                      <small>
-                        of {fmtCents(bb)} · {bb - aa < 0 ? `over by ${fmtCents(aa - bb)}` : `${fmtCents(bb - aa)} left`}
-                      </small>
+                      <small>of {fmtCents(bb)}</small>
                     </div>
-                    <div className="bar">
-                      <div className={`meter${aa > bb ? " over" : ""}`} aria-hidden="true">
-                        <i style={{ width: `${p}%` }} />
-                      </div>
-                      {actions(x)}
+                    <div className={`amt rem${rem < 0 ? " neg" : rem === 0 ? " zero" : ""}`}>
+                      {fmtCents(Math.abs(rem))}
+                      <small>{rem < 0 ? "over" : "left"}</small>
                     </div>
+                    {actions(x)}
                   </div>
                 );
               })}
@@ -680,9 +685,8 @@ export function ExpensesSection() {
               <option key={c.id} value={c.id}>{c.name}</option>
             ))}
           </select>
-          {view === "table" && (
-            <select
-              className="select sort-select"
+          <select
+              className={`select sort-select${view === "list" ? " show" : ""}`}
               aria-label="Sort expenses"
               value={`${sort.key}:${sort.dir}`}
               onChange={(e) => {
@@ -705,7 +709,6 @@ export function ExpensesSection() {
                 ));
               })}
             </select>
-          )}
           <div className="seg" role="group" aria-label="View">
             <button type="button" aria-pressed={view === "table"} onClick={() => setView("table")}>
               <IconTable /><span>Table</span>

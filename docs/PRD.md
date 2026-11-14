@@ -545,9 +545,10 @@ These are stored per browser in localStorage, not in Supabase:
     - The default is **Created, newest first**.
   - **On phones**, the table becomes stacked cards with labeled rows, and the headers are hidden. Sorting moves to a dropdown in the toolbar with options like "Budgeted: highest first" and "Due date: earliest first".
 - **List view:**
-  - Expenses are grouped by category. Each group header shows a swatch, the name, and "{actual} of {budgeted}".
-  - Each item shows its name, "Due {date}", its owner, its status pill, its actual amount, "of {budgeted} · {remaining} left / over by {x}", a progress bar (red when over), and edit/delete actions.
-  - Items within a group follow the current sort.
+  - Expenses are grouped by category. Each group header shows a swatch, the name, "{n}/{total} settled", "{actual} of {budgeted}", and "{remaining} left" or "over by {x}" (red).
+  - Each item is one compact row: its name, with "Due {date}", its owner, and its status pill underneath; its actual amount over "of {budgeted}"; its remaining amount over "left" (or "over", in red); and edit/delete actions. The money columns line up across rows. Settled items have a muted name.
+  - On phones, the name and actions sit on top, with the actual and remaining amounts side by side underneath.
+  - Items within a group follow the current sort. The sort dropdown is shown in List view at every width, since there are no column headers.
 - **Empty states:**
   - No categories: "Expenses live inside categories. Add a category first…"
   - No expenses in the current view: "No expenses (in this category) yet." with an Add expense button.
