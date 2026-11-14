@@ -3,13 +3,23 @@
 import Link from "next/link";
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { IconLogout, IconUser } from "./Icons";
-import { initials } from "@/lib/format";
+import { Avatar } from "./Avatar";
 
 /**
  * Your own avatar at the end of the tracker header (PRD §6.3.1). Opens a menu with Profile and Sign out.
  * Esc and a click outside close it, arrow keys move between the items, and focus returns to the avatar.
  */
-export function AccountMenu({ name, color, onSignOut }: { name: string; color: string; onSignOut: () => void }) {
+export function AccountMenu({
+  name,
+  avatarUrl,
+  color,
+  onSignOut,
+}: {
+  name: string;
+  avatarUrl?: string | null;
+  color: string;
+  onSignOut: () => void;
+}) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
@@ -69,7 +79,7 @@ export function AccountMenu({ name, color, onSignOut }: { name: string; color: s
           }
         }}
       >
-        <span className="av" style={{ background: color }}>{initials(name)}</span>
+        <Avatar name={name} url={avatarUrl} color={color} decorative />
       </button>
       {open && (
         <div className="acct-menu" id={menuId} role="menu" aria-label="Account" onKeyDown={onMenuKey}>

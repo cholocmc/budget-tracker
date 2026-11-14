@@ -14,6 +14,7 @@ export default async function OnboardingPage({ searchParams }: { searchParams: P
   const { mode } = await searchParams;
   const meta = user.user_metadata ?? {};
   const name: string = meta.full_name || meta.name || user.email || "";
+  const avatarUrl: string | null = meta.avatar_url || meta.picture || null;
 
-  return <OnboardingClient userName={name} initialMode={mode === "join" ? "join" : "create"} />;
+  return <OnboardingClient userName={name} userAvatarUrl={avatarUrl} initialMode={mode === "join" ? "join" : "create"} />;
 }

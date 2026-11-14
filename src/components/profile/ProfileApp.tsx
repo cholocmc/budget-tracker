@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
+import { Avatar } from "@/components/Avatar";
 import { Footer } from "@/components/Footer";
 import { IconCheck, IconClose, IconEdit, IconLeft, IconLock, IconLogout, IconPlus, IconTrash, LogoMark } from "@/components/Icons";
 import { Modal } from "@/components/Modal";
@@ -31,11 +32,13 @@ const shareOf = (cents: number, total: number) => (total > 0 ? (cents / total) *
 export function ProfileApp({
   name,
   avatarColor,
+  avatarUrl,
   household,
   initialAccounts,
 }: {
   name: string;
   avatarColor: string;
+  avatarUrl: string | null;
   household: { name: string; role: Role } | null;
   initialAccounts: BankAccount[] | null;
 }) {
@@ -225,7 +228,7 @@ export function ProfileApp({
       <div className="profile-cols">
         <aside className="panel me-card" aria-label="You">
           <div className="who">
-            <span className="av" style={{ background: avatarColor }}>{initials(name)}</span>
+            <Avatar name={name} url={avatarUrl} color={avatarColor} decorative />
             <div style={{ minWidth: 0 }}>
               <div className="who-name">{name}</div>
               <div className="who-meta">

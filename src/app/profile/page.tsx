@@ -17,13 +17,14 @@ export default async function ProfilePage() {
   if (!userId) redirect("/");
 
   const [{ data: profile }, { data: membership }, accounts] = await Promise.all([
-    supabase.from("profiles").select("display_name").eq("id", userId).maybeSingle(),
+    supabase.from("profiles").select("display_name, avatar_url").eq("id", userId).maybeSingle(),
     supabase.from("household_members").select("household_id, role, households(name)").eq("user_id", userId).maybeSingle(),
     fetchBankAccounts(supabase),
   ]);
 
-  const meta = (auth?.claims.user_metadata ?? {}) as { full_name?: string; name?: string };
+  const meta = (auth?.claims.user_metadata ?? {}) as { full_name?: string; name?: string; avatar_url?: string; picture?: string };
   const name = (profile?.display_name as string | undefined) || meta.full_name || meta.name || "You";
+  const avatarUrl = (profile?.avatar_url as string | null | undefined) || meta.avatar_url || meta.picture || null;
   const hh = membership as unknown as MembershipRow | null;
   const household = hh?.households ? { name: hh.households.name, role: hh.role } : null;
 
@@ -31,5 +32,5 @@ export default async function ProfilePage() {
   const members = hh ? await fetchMembers(supabase, hh.household_id) : [];
   const avatarColor = memberColor(Math.max(0, members.findIndex((m) => m.user_id === userId)));
 
-  return <ProfileApp name={name} avatarColor={avatarColor} household={household} initialAccounts={accounts} />;
+  return <ProfileApp name={name} avatarColor={avatarColor} avatarUrl={avatarUrl} household={household} initialAccounts={accounts} />;
 }

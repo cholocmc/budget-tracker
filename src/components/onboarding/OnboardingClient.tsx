@@ -1,16 +1,17 @@
 "use client";
 
 import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
+import { Avatar } from "@/components/Avatar";
 import { Footer } from "@/components/Footer";
 import { IconArrow, IconCheck, IconCopy, IconHome, IconInfo, IconKey, LogoMark } from "@/components/Icons";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { useToast } from "@/components/Toast";
 import { codeMessage, errorCode, errorMessage } from "@/lib/errors";
-import { currentMonthLabel, formatCodeInput, initials, memberColor, plural } from "@/lib/format";
+import { currentMonthLabel, formatCodeInput, memberColor, plural } from "@/lib/format";
 import { getSupabase } from "@/lib/supabase/client";
 
 type Mode = "create" | "join";
-type Found = { name: string; owner_name: string; member_count: number; members: { display_name: string }[] };
+type Found = { name: string; owner_name: string; member_count: number; members: { display_name: string; avatar_url: string | null }[] };
 type View =
   | { kind: "choose" }
   | { kind: "found"; code: string; found: Found }
@@ -31,7 +32,15 @@ function Stepper({ done }: { done: boolean }) {
   );
 }
 
-export function OnboardingClient({ userName, initialMode }: { userName: string; initialMode: Mode }) {
+export function OnboardingClient({
+  userName,
+  userAvatarUrl,
+  initialMode,
+}: {
+  userName: string;
+  userAvatarUrl: string | null;
+  initialMode: Mode;
+}) {
   const supabase = getSupabase();
   const toast = useToast();
   const [mode, setMode] = useState<Mode>(initialMode);
@@ -168,7 +177,7 @@ export function OnboardingClient({ userName, initialMode }: { userName: string; 
           </div>
           <div className="top-right">
             <div className="account">
-              <span className="avi" aria-hidden="true">{initials(userName || "G")}</span>
+              <Avatar className="avi" name={userName || "G"} url={userAvatarUrl} decorative />
               <span className="who">Signed in with Google</span>
               <button type="button" onClick={signOut}>Sign out</button>
             </div>
@@ -296,9 +305,7 @@ export function OnboardingClient({ userName, initialMode }: { userName: string; 
                 <div className="meta">
                   <span className="avs">
                     {view.found.members.map((m, i) => (
-                      <span key={i} style={{ background: memberColor(i) }} title={m.display_name}>
-                        {initials(m.display_name)}
-                      </span>
+                      <Avatar key={i} className="" name={m.display_name} url={m.avatar_url} color={memberColor(i)} title={m.display_name} />
                     ))}
                   </span>
                   {plural(view.found.member_count, "member")} · Owned by {view.found.owner_name}

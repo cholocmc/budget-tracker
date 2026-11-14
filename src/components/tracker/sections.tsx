@@ -14,13 +14,13 @@ import {
   LogoMark,
 } from "@/components/Icons";
 import { AccountMenu } from "@/components/AccountMenu";
+import { Avatar } from "@/components/Avatar";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 import { arcPath } from "@/lib/chart";
 import {
   fmtCents,
   fmtDue,
   fmtCreated,
-  initials,
   isMonthKey,
   memberColor,
   monthKey,
@@ -39,7 +39,8 @@ export function Header() {
   const { state, me, open, ops, memberIndex, online, connected } = useTracker();
   const ms = state.members;
   const others = ms.filter((m) => m.user_id !== me);
-  const myName = ms.find((m) => m.user_id === me)?.display_name ?? "You";
+  const mine = ms.find((m) => m.user_id === me);
+  const myName = mine?.display_name ?? "You";
   return (
     <header className="top">
       <div className="brand">
@@ -68,10 +69,9 @@ export function Header() {
             onClick={() => open({ kind: "members" })}
           >
             {others.map((m) => (
-              <span key={m.user_id} className="av" style={{ background: memberColor(memberIndex(m.user_id)) }}>
-                {initials(m.display_name)}
+              <Avatar key={m.user_id} name={m.display_name} url={m.avatar_url} color={memberColor(memberIndex(m.user_id))}>
                 {online.has(m.user_id) && <span className="online" aria-hidden="true" />}
-              </span>
+              </Avatar>
             ))}
           </button>
         )}
@@ -84,7 +84,7 @@ export function Header() {
           <IconSettings />
           <span className="lbl">Settings</span>
         </button>
-        <AccountMenu name={myName} color={memberColor(memberIndex(me))} onSignOut={() => void ops.signOut()} />
+        <AccountMenu name={myName} avatarUrl={mine?.avatar_url} color={memberColor(memberIndex(me))} onSignOut={() => void ops.signOut()} />
       </div>
     </header>
   );
@@ -517,7 +517,12 @@ export function ExpensesSection() {
 
   const owner = (id: string) => (
     <span className="owner">
-      <span className="av" style={{ background: memberColor(memberIndex(id)) }}>{initials(t.memberName(id))}</span>
+      <Avatar
+        name={t.memberName(id)}
+        url={t.state.members.find((m) => m.user_id === id)?.avatar_url}
+        color={memberColor(memberIndex(id))}
+        decorative
+      />
       {ownerLabel(id)}
     </span>
   );

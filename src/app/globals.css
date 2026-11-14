@@ -115,6 +115,8 @@ svg.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-widt
   border: 2px solid var(--bg); margin-left: -8px; font-family: var(--font-mono); color: #03140C; position: relative; }
 .av:first-child { margin-left: 0; }
 .av .online { position: absolute; right: -2px; bottom: -2px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 6px var(--glow); }
+/* A profile picture fills the circle; initials show when there is none or it fails to load. */
+.av img, .avi img, .avs img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
 
 /* Status pills */
 .pill { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; padding: 3px 9px; border-radius: 999px; white-space: nowrap; border: 1px solid transparent; }

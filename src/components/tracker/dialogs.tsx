@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { IconCopy, IconDown, IconUp } from "@/components/Icons";
+import { Avatar } from "@/components/Avatar";
 import { Modal } from "@/components/Modal";
 import {
   PALETTE,
@@ -9,7 +10,6 @@ import {
   centsToInput,
   fmtCents,
   fmtDue,
-  initials,
   inputToCents,
   lastDayOf,
   memberColor,
@@ -313,7 +313,7 @@ function MemberList() {
     <ul className="member-list">
       {state.members.map((m) => (
         <li key={m.user_id}>
-          <span className="av" style={{ background: memberColor(memberIndex(m.user_id)) }}>{initials(m.display_name)}</span>
+          <Avatar name={m.display_name} url={m.avatar_url} color={memberColor(memberIndex(m.user_id))} decorative />
           <span style={{ overflowWrap: "anywhere" }}>{m.user_id === me ? `${m.display_name} (you)` : m.display_name}</span>
           <span className="role">{m.role === "owner" ? "Owner" : "Member"}</span>
         </li>
