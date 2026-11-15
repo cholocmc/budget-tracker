@@ -6,11 +6,13 @@ import { Footer } from "@/components/Footer";
 import { useToast } from "@/components/Toast";
 import {
   EXPENSE_COLUMNS,
+  CATEGORY_COLUMNS,
   fetchCategories,
   fetchExpenses,
   fetchHousehold,
   fetchMembers,
   fetchTrackers,
+  normalizeCategory,
   normalizeExpense,
 } from "@/lib/data";
 import { errorCode, errorMessage } from "@/lib/errors";
@@ -280,7 +282,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
     // Categories
     const onCategory = ({ new: row }: { new: Record<string, unknown> }) => {
       if (row.household_id !== hid || isEcho(row as { id: string; updated_at: string })) return;
-      dispatch({ type: "upsertCategory", category: row as unknown as Category });
+      dispatch({ type: "upsertCategory", category: normalizeCategory(row) });
     };
     ch.on("postgres_changes", { event: "INSERT", ...filtered("categories") }, onCategory);
     ch.on("postgres_changes", { event: "UPDATE", ...filtered("categories") }, onCategory);
@@ -446,7 +448,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
         window.location.assign("/signed-out");
       },
 
-      async saveCategory({ name, color }, original) {
+      async saveCategory({ name, color, allocated_cents }, original) {
         const dup = stateRef.current.categories.some(
           (c) => c.name.toLowerCase() === name.toLowerCase() && c.id !== original?.id,
         );
@@ -454,23 +456,24 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
         if (dup) return dupMsg;
 
         if (original) {
-          const optimistic = { ...original, name, color };
+          const optimistic = { ...original, name, color, allocated_cents };
           dispatch({ type: "upsertCategory", category: optimistic });
           const { data, error } = await sb
             .from("categories")
-            .update({ name, color })
+            .update({ name, color, allocated_cents })
             .eq("id", original.id)
             .eq("updated_at", original.updated_at)
-            .select("id, household_id, name, color, updated_by, created_at, updated_at");
+            .select(CATEGORY_COLUMNS);
           if (error || !data?.length) {
-            const { data: latest } = await sb.from("categories").select("*").eq("id", original.id).maybeSingle();
-            if (latest) dispatch({ type: "upsertCategory", category: latest as Category });
+            const { data: latest } = await sb.from("categories").select(CATEGORY_COLUMNS).eq("id", original.id).maybeSingle();
+            if (latest) dispatch({ type: "upsertCategory", category: normalizeCategory(latest) });
             else dispatch({ type: "removeCategory", id: original.id });
             if (errorCode(error) === "UNIQUE") return dupMsg;
             return error ? errorMessage(error) : CATEGORY_CONFLICT_MSG;
           }
-          markOwn(data[0] as Category);
-          dispatch({ type: "upsertCategory", category: data[0] as Category });
+          const saved = normalizeCategory(data[0]);
+          markOwn(saved);
+          dispatch({ type: "upsertCategory", category: saved });
           toast(name === original.name ? `Updated ${name}` : `Renamed ${original.name} to ${name}`);
           return null;
         }
@@ -481,6 +484,7 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
           household_id: stateRef.current.household.id,
           name,
           color,
+          allocated_cents,
           updated_by: me,
           created_at: now,
           updated_at: now,
@@ -488,15 +492,16 @@ export function TrackerApp({ initial }: { initial: InitialData }) {
         dispatch({ type: "upsertCategory", category: row });
         const { data, error } = await sb
           .from("categories")
-          .insert({ id: row.id, household_id: row.household_id, name, color })
-          .select("id, household_id, name, color, updated_by, created_at, updated_at")
+          .insert({ id: row.id, household_id: row.household_id, name, color, allocated_cents })
+          .select(CATEGORY_COLUMNS)
           .single();
         if (error) {
           dispatch({ type: "removeCategory", id: row.id });
           return errorCode(error) === "UNIQUE" ? dupMsg : errorMessage(error);
         }
-        markOwn(data as Category);
-        dispatch({ type: "upsertCategory", category: data as Category });
+        const saved = normalizeCategory(data);
+        markOwn(saved);
+        dispatch({ type: "upsertCategory", category: saved });
         toast(`Added ${name}`);
         return null;
       },

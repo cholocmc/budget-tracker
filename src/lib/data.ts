@@ -36,13 +36,20 @@ export async function fetchMembers(sb: SupabaseClient, householdId: string): Pro
     .sort((a, b) => (a.role === b.role ? a.joined_at.localeCompare(b.joined_at) : a.role === "owner" ? -1 : 1));
 }
 
+export const CATEGORY_COLUMNS = "id, household_id, name, color, allocated_cents, updated_by, created_at, updated_at";
+
 export async function fetchCategories(sb: SupabaseClient, householdId: string): Promise<Category[]> {
   const { data } = await sb
     .from("categories")
-    .select("id, household_id, name, color, updated_by, created_at, updated_at")
+    .select(CATEGORY_COLUMNS)
     .eq("household_id", householdId)
     .order("created_at", { ascending: true });
-  return (data ?? []) as Category[];
+  return (data ?? []).map(normalizeCategory);
+}
+
+/** bigint columns can arrive as strings; keep the allocation as a number of centavos. */
+export function normalizeCategory(row: Record<string, unknown>): Category {
+  return { ...(row as unknown as Category), allocated_cents: Number(row.allocated_cents ?? 0) };
 }
 
 export async function fetchTrackers(sb: SupabaseClient, householdId: string): Promise<Tracker[]> {

@@ -68,6 +68,20 @@ button, input, select { font: inherit; color: inherit; }
 .mono, .num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 .eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
 svg.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: none; display: inline-block; }
+/* Term + tooltip (components/Tooltip.tsx). Global because the tooltip renders in a portal. */
+.term { background: none; border: 0; padding: 0; margin: 0; letter-spacing: inherit; text-transform: inherit; text-align: inherit; cursor: help;
+  text-decoration: underline dotted var(--line-strong); text-decoration-thickness: 1px; text-underline-offset: 4px; transition: color .15s, text-decoration-color .15s; }
+.term:hover, .term:focus-visible { color: var(--fg); text-decoration-color: currentColor; }
+.tooltip { position: fixed; left: 0; top: 0; z-index: 80; max-width: min(260px, calc(100vw - 16px)); padding: 8px 11px; border-radius: var(--r-sm);
+  background: var(--fg); color: var(--bg); box-shadow: var(--shadow); pointer-events: none;
+  font-family: var(--font-body); font-size: 13px; line-height: 1.45; letter-spacing: normal; text-transform: none; font-weight: 400; text-align: left;
+  opacity: 0; transform: translateY(2px); transition: opacity .12s, transform .12s; }
+.tooltip[data-ready] { opacity: 1; transform: none; }
+/* Touch: grow the tap area to at least 40px tall without moving the layout. */
+@media (pointer: coarse) {
+  .term { position: relative; }
+  .term::after { content: ""; position: absolute; inset: -12px -6px; }
+}
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
 /* ==========================================================================
@@ -270,7 +284,7 @@ svg.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-widt
 .chip[aria-current="true"] { border-color: var(--accent); color: var(--accent-text); background: var(--accent-soft); }
 
 /* KPIs */
-.kpis { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
 .kpi { padding: 16px 18px; border: 1px solid var(--line); border-radius: var(--r); background: var(--surface); display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .kpi .val { font-family: var(--font-mono); font-size: clamp(20px, 2.6vw, 28px); font-weight: 600; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .kpi.remain .val { color: var(--accent); }
@@ -279,6 +293,7 @@ svg.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-widt
 .meter > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), #16B8C9); border-radius: 99px; }
 .meter.over > i { background: var(--danger); }
 .kpi .foot { font-size: 12px; color: var(--muted); }
+.kpi .foot.neg { color: var(--danger); }
 
 /* Chart / summary split */
 .split { display: grid; grid-template-columns: minmax(0, var(--left, 42%)) 16px minmax(0, 1fr); gap: 0; }
@@ -396,6 +411,7 @@ body.resizing { cursor: col-resize; user-select: none; }
 }
 
 @media (max-width: 900px) {
+  .kpis { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
   .split { grid-template-columns: minmax(0,1fr) !important; gap: 16px; }
   .resizer { display: none; }
 }
@@ -420,7 +436,6 @@ body.resizing { cursor: col-resize; user-select: none; }
 
   .kpis { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
   .kpi { padding: 12px 14px; }
-  .kpi.remain { grid-column: 1 / -1; }
   .kpi .val { font-size: 19px; }
 
   .panel { padding: 14px; }

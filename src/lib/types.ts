@@ -21,6 +21,8 @@ export interface Category {
   household_id: string;
   name: string;
   color: string;
+  /** Monthly allocation for this category, in centavos (PRD §4.4.7). The same in every month. */
+  allocated_cents: number;
   updated_by: string | null;
   created_at: string;
   updated_at: string;

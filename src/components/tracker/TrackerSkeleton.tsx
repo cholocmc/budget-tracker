@@ -39,7 +39,7 @@ export function TrackerSkeleton() {
       </section>
 
       <section className="kpis" aria-hidden="true">
-        {[0, 1, 2].map((i) => (
+        {[0, 1, 2, 3].map((i) => (
           <div key={i} className="kpi">
             <Bone w={90} h={11} />
             <Bone w="70%" h={28} />

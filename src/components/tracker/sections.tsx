@@ -31,6 +31,7 @@ import {
   statusOf,
 } from "@/lib/format";
 import type { Category, Expense } from "@/lib/types";
+import { Term } from "@/components/Tooltip";
 import { useTracker, type SortKey } from "./context";
 import { SPLIT_DEFAULT, SPLIT_MAX, SPLIT_MIN } from "./context";
 
@@ -176,7 +177,7 @@ export function EmptyMonth() {
 }
 
 /* ---------- Summary math ---------- */
-export type SummaryRow = { cat: Category; count: number; budget: number; actual: number; remaining: number };
+export type SummaryRow = { cat: Category; count: number; alloc: number; budget: number; actual: number; remaining: number };
 export function useSummary() {
   const { state, expenses } = useTracker();
   return useMemo(() => {
@@ -185,13 +186,27 @@ export function useSummary() {
       const ex = list.filter((x) => x.category_id === c.id);
       const budget = ex.reduce((s, x) => s + x.budgeted_cents, 0);
       const actual = ex.reduce((s, x) => s + x.actual_cents, 0);
-      return { cat: c, count: ex.length, budget, actual, remaining: budget - actual };
+      return { cat: c, count: ex.length, alloc: c.allocated_cents, budget, actual, remaining: budget - actual };
     });
+    const alloc = rows.reduce((s, r) => s + r.alloc, 0);
     const budget = rows.reduce((s, r) => s + r.budget, 0);
     const actual = rows.reduce((s, r) => s + r.actual, 0);
-    return { rows, tot: { budget, actual, remaining: budget - actual, count: list.length } };
+    return { rows, tot: { alloc, budget, actual, remaining: budget - actual, count: list.length } };
   }, [state.categories, expenses]);
 }
+
+/* ---------- What each total means, for the KPI and summary-header tooltips (PRD §6.3.5) ---------- */
+const TIPS = {
+  kpiAllocated: "What the household sets aside each month, added up across every category. Set it when you add or edit a category.",
+  kpiBudgeted: "What this month's expenses are planned to cost, added up.",
+  kpiActual: "What's actually been paid so far this month, added up across every expense.",
+  kpiRemaining: "Budgeted minus actual spent. It goes below zero once spending passes the budget.",
+  category: "Categories are shared across every month. The number is how many expenses it has this month.",
+  allocated: "This category's monthly allocation. It's the same every month.",
+  budgeted: "What this category's expenses this month are planned to cost. Red means it's more than the allocation.",
+  actual: "What's actually been paid in this category this month.",
+  remaining: "Budgeted minus actual. Red means the category is over budget.",
+};
 
 /* ---------- KPI row (PRD §6.3.5) ---------- */
 export function Kpis() {
@@ -202,15 +217,27 @@ export function Kpis() {
   const over = tot.actual > tot.budget && tot.budget > 0;
   return (
     <section className="kpis" aria-label="Month totals">
+      {/* PRD §6.3.5: the sum of every category's monthly allocation, compared with what's budgeted. */}
       <div className="kpi">
-        <span className="eyebrow">Budgeted</span>
+        <span className="eyebrow"><Term tip={TIPS.kpiAllocated}>Allocated</Term></span>
+        <span className="val">{fmtCents(tot.alloc)}</span>
+        <span className={`foot${tot.budget > tot.alloc && tot.alloc > 0 ? " neg" : ""}`}>
+          {tot.alloc === 0
+            ? "Set an allocation on each category"
+            : tot.budget > tot.alloc
+              ? `Budgeted ${fmtCents(tot.budget - tot.alloc)} over allocation`
+              : `${fmtCents(tot.alloc - tot.budget)} not yet budgeted`}
+        </span>
+      </div>
+      <div className="kpi">
+        <span className="eyebrow"><Term tip={TIPS.kpiBudgeted}>Budgeted</Term></span>
         <span className="val">{fmtCents(tot.budget)}</span>
         <span className="foot">
           {plural(tot.count, "expense")} across {plural(state.categories.length, "category", "categories")}
         </span>
       </div>
       <div className="kpi">
-        <span className="eyebrow">Actual spent</span>
+        <span className="eyebrow"><Term tip={TIPS.kpiActual}>Actual spent</Term></span>
         <span className="val">{fmtCents(tot.actual)}</span>
         <div className={`meter${over ? " over" : ""}`} role="progressbar" aria-label="Budget used" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100}>
           <i style={{ width: `${pct}%` }} />
@@ -218,7 +245,7 @@ export function Kpis() {
         <span className="foot">{ratio.toFixed(1)}% of budget used</span>
       </div>
       <div className={`kpi remain${tot.remaining < 0 ? " neg" : ""}`}>
-        <span className="eyebrow">Remaining</span>
+        <span className="eyebrow"><Term tip={TIPS.kpiRemaining}>Remaining</Term></span>
         <span className="val">{fmtCents(tot.remaining)}</span>
         <span className="foot">{tot.remaining < 0 ? "Over budget this month" : "Budgeted minus actual"}</span>
       </div>
@@ -412,10 +439,11 @@ function CategorySummary() {
           <table className="stack">
             <thead>
               <tr>
-                <th>Category</th>
-                <th className="r">Budgeted</th>
-                <th className="r">Actual</th>
-                <th className="r">Remaining</th>
+                <th><Term tip={TIPS.category}>Category</Term></th>
+                <th className="r"><Term tip={TIPS.allocated}>Allocated</Term></th>
+                <th className="r"><Term tip={TIPS.budgeted}>Budgeted</Term></th>
+                <th className="r"><Term tip={TIPS.actual}>Actual</Term></th>
+                <th className="r"><Term tip={TIPS.remaining}>Remaining</Term></th>
                 <th><span className="sr-only">Actions</span></th>
               </tr>
             </thead>
@@ -429,7 +457,14 @@ function CategorySummary() {
                       <span className="cnt" title={`${plural(r.count, "expense")} this month`}>{r.count}</span>
                     </div>
                   </td>
-                  <td className="num r" data-label="Budgeted">{fmtCents(r.budget)}</td>
+                  <td className="num r" data-label="Allocated">{fmtCents(r.alloc)}</td>
+                  <td
+                    className={`num r${r.alloc > 0 && r.budget > r.alloc ? " neg" : ""}`}
+                    data-label="Budgeted"
+                    title={r.alloc > 0 && r.budget > r.alloc ? `${fmtCents(r.budget - r.alloc)} over allocation` : undefined}
+                  >
+                    {fmtCents(r.budget)}
+                  </td>
                   <td className="num r" data-label="Actual">{fmtCents(r.actual)}</td>
                   <td className={`num r${r.remaining < 0 ? " neg" : r.remaining === 0 ? " zero" : ""}`} data-label="Remaining">{fmtCents(r.remaining)}</td>
                   <td className="act">
@@ -448,7 +483,8 @@ function CategorySummary() {
             <tfoot>
               <tr>
                 <td className="lead">Total</td>
-                <td className="num r" data-label="Budgeted">{fmtCents(tot.budget)}</td>
+                <td className="num r" data-label="Allocated">{fmtCents(tot.alloc)}</td>
+                <td className={`num r${tot.alloc > 0 && tot.budget > tot.alloc ? " neg" : ""}`} data-label="Budgeted">{fmtCents(tot.budget)}</td>
                 <td className="num r" data-label="Actual">{fmtCents(tot.actual)}</td>
                 <td className={`num r ${tot.remaining < 0 ? "neg" : "pos"}`} data-label="Remaining">{fmtCents(tot.remaining)}</td>
                 <td className="act empty-cell" />

@@ -13,7 +13,7 @@ export type RowId = "month" | "totals" | "summary" | "expenses";
 export const ROWS_DEFAULT: RowId[] = ["month", "totals", "summary", "expenses"];
 export const ROW_INFO: Record<RowId, { name: string; detail: string }> = {
   month: { name: "Month", detail: "Month switcher and Add expense" },
-  totals: { name: "Month totals", detail: "Budgeted, Actual spent, Remaining" },
+  totals: { name: "Month totals", detail: "Allocated, Budgeted, Actual spent, Remaining" },
   summary: { name: "Budget vs actual and Category summary", detail: "Chart and per-category totals" },
   expenses: { name: "Expenses", detail: "Every expense this month" },
 };
@@ -51,7 +51,7 @@ export interface Ops {
   deleteHousehold(): Promise<string | null>;
   ownedExpenseCount(): Promise<number>;
   signOut(): Promise<void>;
-  saveCategory(input: { name: string; color: string }, original?: Category): Promise<string | null>;
+  saveCategory(input: { name: string; color: string; allocated_cents: number }, original?: Category): Promise<string | null>;
   categoryImpact(id: string): Promise<DeleteImpact | null>;
   deleteCategory(cat: Category, impact: DeleteImpact | null): Promise<string | null>;
   saveExpense(input: ExpenseInput, original?: Expense): Promise<string | null>;

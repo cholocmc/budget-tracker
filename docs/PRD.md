@@ -150,6 +150,10 @@ Routing rules:
    - If the category has no expenses, the dialog says so and still asks for confirmation.
    - If the deleted category was the active expense filter, the filter resets to "All categories".
 6. An expense cannot be created while the household has no categories. The "Add expense" button is disabled and shows the hint "Add a category first".
+7. **Monthly allocation:** each category has an allocation, the amount the household sets aside for it each month. It is a number ≥ 0 with at most 2 decimals, and a blank field saves as 0.
+   - Like the category itself, it is shared across all months: changing it changes every month.
+   - It is set in the category dialog (add and edit).
+   - It is a plan for the category, separate from the expenses' budgeted amounts. When a category's budgeted total is more than its allocation (and the allocation isn't 0), the budgeted amount shows in red.
 
 ### 4.5 Expenses
 
@@ -220,6 +224,7 @@ create table categories (
   household_id uuid not null references households(id) on delete cascade,
   name         text not null check (char_length(btrim(name)) between 1 and 40),
   color        text not null,
+  allocated_cents bigint not null default 0 check (allocated_cents >= 0),   -- monthly allocation (§4.4.7)
   created_at   timestamptz not null default now(),
   updated_at   timestamptz not null default now()
 );
@@ -428,7 +433,7 @@ Section headings carry no eyebrow labels; only the hero has one.
 **Settings dialog:**
 - "Section order": lists the four sections below the header in their current order, each with its name, a one-line description, and move up / move down buttons (disabled at the ends):
   1. **Month** (month switcher and Add expense)
-  2. **Month totals** (Budgeted, Actual spent, Remaining)
+  2. **Month totals** (Allocated, Budgeted, Actual spent, Remaining)
   3. **Budget vs actual and Category summary**
   4. **Expenses**
 - Note: "Arrange the tracker's sections. This only changes the layout on this device."
@@ -502,11 +507,13 @@ Section headings carry no eyebrow labels; only the hero has one.
   - The due date's day of month moves to the new month and is **clamped to the month's last day**. For example, Jan 31 becomes Feb 28 or 29.
 
 #### 6.3.5 Totals and summary
-- **KPI row** with three tiles:
-  1. **Budgeted:** the total, with "N expenses across M categories".
-  2. **Actual spent:** the total, a progress meter of actual ÷ budgeted (capped at 100% visually, red when over), and "X.X% of budget used".
-  3. **Remaining:** the total in accent color. When negative it turns red and says "Over budget this month".
-  - On phones, the tiles show as 2 + 1. Below 380px they stack into one column.
+- **KPI row** with four tiles:
+  1. **Allocated:** the total of every category's monthly allocation (§4.4.7). The line under it reads "{amount} not yet budgeted", or "Budgeted {amount} over allocation" in red when the budgeted total is higher. With no allocations set it reads "Set an allocation on each category".
+  2. **Budgeted:** the total, with "N expenses across M categories".
+  3. **Actual spent:** the total, a progress meter of actual ÷ budgeted (capped at 100% visually, red when over), and "X.X% of budget used".
+  4. **Remaining:** the total in accent color. When negative it turns red and says "Over budget this month".
+  - Below 900px the tiles show as 2 × 2. Below 380px they stack into one column.
+- **Explanations:** each KPI label and each Category summary column header has a tooltip saying what the value means. It opens on mouse hover, keyboard focus, or tap, and closes on Esc, scroll, or a tap elsewhere; screen readers get the same text as the label's description.
 - **Budget vs actual chart** (card):
   - A nested pie:
     - The **outer ring** shows each category's share of the **budgeted** total.
@@ -520,7 +527,7 @@ Section headings carry no eyebrow labels; only the hero has one.
   - **Interaction:** hovering, tapping, or keyboard-focusing a slice or legend row highlights that category (other slices dim) and updates a readout with the category's budgeted and actual amounts and percentages.
   - **Responsive:** the layout depends on the card's own width (container query), not the screen width. Below 560px the legend sits under the chart; above that, beside it.
 - **Category summary** (card):
-  - A table with columns Category (swatch, name, and expense count for this month), Budgeted, Actual, Remaining (red when negative), and edit/delete actions.
+  - A table with columns Category (swatch, name, and expense count for this month), Allocated, Budgeted (red when over the allocation, §4.4.7), Actual, Remaining (red when negative), and edit/delete actions.
   - It lists **all** household categories, including ones with no expenses this month.
   - A totals row at the bottom; total Remaining shows in accent color, or red when negative.
   - The **Add category** button is in the card header.
@@ -573,7 +580,7 @@ Section headings carry no eyebrow labels; only the hero has one.
   - "Pick a due date in {Month Year}."
 
 **Category dialog (add and edit):**
-- Name and color swatches.
+- Name, monthly allocation (with the hint "What the household sets aside for this category each month."), and color swatches.
 - Editing shows "Categories are shared across all months. Changes apply to all N expenses in this category."
 - Adding shows "The new category appears in every month."
 

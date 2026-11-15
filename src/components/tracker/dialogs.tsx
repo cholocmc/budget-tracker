@@ -513,6 +513,7 @@ function CategoryDialog({ id }: { id?: string }) {
   const used = state.categories.map((c) => c.color);
   const [name, setName] = useState(live?.name ?? "");
   const [color, setColor] = useState(live?.color ?? (PALETTE.find((c) => !used.includes(c)) || PALETTE[state.categories.length % PALETTE.length]));
+  const [alloc, setAlloc] = useState(live ? centsToInput(live.allocated_cents) : "");
   const [count, setCount] = useState<number | null>(null);
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
@@ -529,9 +530,11 @@ function CategoryDialog({ id }: { id?: string }) {
     const v = name.trim();
     if (!v) return setErr("Enter a category name.");
     if (v.length > 40) return setErr("Category names can be up to 40 characters.");
+    const allocated_cents = inputToCents(alloc);
+    if (!Number.isFinite(allocated_cents) || allocated_cents < 0) return setErr("The allocation must be zero or more.");
     setBusy(true);
     saving.current = true;
-    const error = await ops.saveCategory({ name: v, color }, original);
+    const error = await ops.saveCategory({ name: v, color, allocated_cents }, original);
     saving.current = false;
     setBusy(false);
     if (error) return setErr(error);
@@ -555,6 +558,7 @@ function CategoryDialog({ id }: { id?: string }) {
               setOriginal(live);
               setName(live.name);
               setColor(live.color);
+              setAlloc(centsToInput(live.allocated_cents));
               setErr("");
             }}
           >
@@ -566,6 +570,12 @@ function CategoryDialog({ id }: { id?: string }) {
         <div className="field full">
           <label htmlFor="cat-name">Name</label>
           <input id="cat-name" maxLength={40} value={name} placeholder="e.g. Bills" autoComplete="off" onChange={(e) => { setName(e.target.value); setErr(""); }} />
+        </div>
+        {/* PRD §4.4.7: one allocation per category, the same in every month. */}
+        <div className="field full">
+          <label htmlFor="cat-alloc">Monthly allocation</label>
+          <MoneyField id="cat-alloc" value={alloc} onChange={(v) => { setAlloc(v); setErr(""); }} />
+          <span className="hint">What the household sets aside for this category each month.</span>
         </div>
         <div className="field full">
           <span className="label" id="cat-color-label">Color</span>
