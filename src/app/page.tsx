@@ -6,42 +6,22 @@ import { PreviewCard } from "@/components/landing/PreviewCard";
 import { ProfilePreview } from "@/components/landing/ProfilePreview";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
 
-const FEATURES = [
+// Three benefits, each a job the household does (PRD §6.1). Supporting details sit in one line under each.
+const BENEFITS = [
   {
-    title: "A tracker for every month",
-    body: "Opens on the current month. Jump between months or start a new one in a click.",
-    points: ["Copy recurring bills from last month", "Due dates carry over to the same day"],
-    icon: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></>,
+    title: "Plan the month",
+    body: "Give every expense a budgeted amount, grouped into categories you set up once. When a new month starts, copy the recurring bills over and their due dates come with them.",
+    detail: "Rename a category once and every month follows",
   },
   {
-    title: "Categories that follow you",
-    body: "Bills, Insurance, Medicine, or anything you need. Define them once and use them every month.",
-    points: ["Rename once, every expense updates", "Deletes ask you to confirm first"],
-    icon: <path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" />,
+    title: "Share it, as equals",
+    body: "Everyone who joins with your household code can add, edit, and delete. Each expense has an owner and a due date, so it's clear who's paying what, and changes show up for everyone without a refresh.",
+    detail: "Settled, partly paid, and overdue at a glance",
   },
   {
-    title: "Expenses with owners and due dates",
-    body: "Record the budgeted and actual amount for each expense, who handles it, and when it's due.",
-    points: ["Settled, partly paid, overdue at a glance", "Amounts formatted as you type"],
-    icon: <><path d="M7 4h10l2 3v13H5V7z" /><path d="M9 11h6M9 15h4" /></>,
-  },
-  {
-    title: "Budget vs actual, in one chart",
-    body: "The outer ring shows what you planned. The inner pie shows what you spent. Both split by category.",
-    points: ["Category summary with remaining totals", "Overspending shows up in red"],
-    icon: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="4" /><path d="M12 3v5" /></>,
-  },
-  {
-    title: "Table or list, your call",
-    body: "Scan everything in a sortable table, or switch to a list grouped by category.",
-    points: ["Sort by category, owner, due date, or amount", "Filter to a single category"],
-    icon: <><path d="M3 6h18M3 12h18M3 18h12" /><path d="M19 15v6M16.5 18.5L19 21l2.5-2.5" /></>,
-  },
-  {
-    title: "One household, shared",
-    body: "Share your household code with your partner or family. Every member can add, edit, and delete, so the budget stays current.",
-    points: ["Each person belongs to one household", "Works on phone and desktop, light or dark"],
-    icon: <><circle cx="9" cy="8" r="3.5" /><circle cx="17" cy="9" r="2.5" /><path d="M2.5 20c1-3.5 3.5-5.5 6.5-5.5s5.5 2 6.5 5.5M15 14.5c2.5 0 4.5 1.5 5.5 4.5" /></>,
+    title: "See the gap",
+    body: "Log what you actually pay as it happens. The chart and totals show what's left in each category, and anything over budget turns red.",
+    detail: "Sort and filter in a table, or read it as a list",
   },
 ];
 
@@ -60,8 +40,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
           <div className="nav-right">
             <ThemeSwitch />
             <a className="btn-ghost" href="#start">
-              <span className="lbl">Sign in</span>
-              <span aria-hidden="true">→</span>
+              Sign in
             </a>
           </div>
         </nav>
@@ -78,7 +57,12 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
             </p>
             <div className="cta-row" id="start">
               <GoogleSignIn initialError={authError} />
-              <p className="fine">Start your own household, or join one with a household code.</p>
+              <ul className="cta-notes">
+                <li>
+                  <b>Got a household code?</b> Sign in, then enter it to join.
+                </li>
+                <li>Google shares only your name, email, and profile photo.</li>
+              </ul>
             </div>
           </div>
           <PreviewCard />
@@ -86,38 +70,28 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
       </div>
 
       <section aria-labelledby="f-title">
-        <div className="lwrap">
+        <div className="lwrap benefits-wrap">
           <div className="sec-head">
-            <span className="eyebrow">What you can do</span>
             <h2 id="f-title">Everything a monthly budget needs, and nothing it doesn&apos;t</h2>
-            <p>
-              Built around how households actually pay bills: one tracker per month, shared categories, and a clear
-              picture of budget against reality.
-            </p>
+            <p>One tracker per month, shared by the whole household, with a clear picture of the plan against what was paid.</p>
           </div>
-          <div className="features">
-            {FEATURES.map((f) => (
-              <article className="feature" key={f.title}>
-                <div className="ico" aria-hidden="true">
-                  <svg viewBox="0 0 24 24">{f.icon}</svg>
+          <ol className="benefits">
+            {BENEFITS.map((b) => (
+              <li key={b.title}>
+                <h3>{b.title}</h3>
+                <div>
+                  <p>{b.body}</p>
+                  <p className="detail">{b.detail}</p>
                 </div>
-                <h3>{f.title}</h3>
-                <p>{f.body}</p>
-                <ul>
-                  {f.points.map((p) => (
-                    <li key={p}>{p}</li>
-                  ))}
-                </ul>
-              </article>
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
-      <section aria-labelledby="p-title" style={{ paddingTop: 8 }}>
+      <section aria-labelledby="p-title">
         <div className="lwrap showcase">
           <div className="sec-head">
-            <span className="eyebrow">Your private profile</span>
             <h2 id="p-title">Every account, one total</h2>
             <p>
               Keep the balance of each bank and e-wallet you use on your own profile, and see your total across all of
@@ -133,10 +107,9 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
         </div>
       </section>
 
-      <section aria-labelledby="s-title" style={{ paddingTop: 8 }}>
+      <section aria-labelledby="s-title">
         <div className="lwrap">
           <div className="sec-head">
-            <span className="eyebrow">Getting started</span>
             <h2 id="s-title">Set up in about two minutes</h2>
           </div>
           <ol className="steps">
@@ -159,11 +132,10 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
         </div>
       </section>
 
-      <section style={{ paddingTop: 8 }}>
+      <section aria-labelledby="c-title">
         <div className="lwrap">
           <div className="closing">
-            <span className="eyebrow">Start this month</span>
-            <h2>
+            <h2 id="c-title">
               Your first tracker opens on <CurrentMonth />
             </h2>
             <p>Sign in, add your bills, and know exactly what&apos;s left before the month ends.</p>

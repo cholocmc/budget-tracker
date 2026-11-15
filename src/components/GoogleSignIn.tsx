@@ -71,60 +71,73 @@ function loadGis(): Promise<void> {
   return gisReady;
 }
 
-function GisButton() {
+/** Google allows 200–400px. Fill the CTA column on phones (minus the plate's padding); 300px on wider layouts. */
+function gisWidth(slot: HTMLElement, phone: boolean) {
+  if (!phone) return 300;
+  const box = slot.closest(".cta-row") ?? slot.parentElement;
+  const avail = (box?.clientWidth ?? 300) - 12;
+  return Math.round(Math.min(400, Math.max(200, avail)));
+}
+
+function GisButton({ initialError }: { initialError?: string | null }) {
   const slot = useRef<HTMLDivElement>(null);
-  const [state, setState] = useState<{ busy: boolean; error: string | null }>({ busy: false, error: null });
+  const [state, setState] = useState<{ busy: boolean; error: string | null }>({ busy: false, error: initialError ?? null });
+  // "loading" shows a placeholder pill; "failed" swaps in the redirect button so sign-in still works
+  // when Google's script is blocked or the network drops it.
+  const [phase, setPhase] = useState<"loading" | "ready" | "failed">("loading");
 
   useEffect(() => {
+    if (phase === "failed") return;
     listeners.add(setState);
     let alive = true;
-    let ready = false;
-    let rendered: boolean | null = null;
-    const mq = matchMedia("(prefers-color-scheme: light)");
+    let lastWidth = 0;
+    const phone = matchMedia("(max-width: 640px)");
 
-    // Google's button is an iframe that can't read our CSS, so pick its theme here and
-    // re-render it whenever the page theme flips (switch, system change, or another tab).
+    // Google's button is an iframe that can't read our CSS. The white "outline" button reads clearly on
+    // both themes (the black one disappeared into the dark page), so only its width needs re-rendering.
     const render = () => {
-      if (!alive || !ready || !slot.current) return;
-      const attr = document.documentElement.getAttribute("data-theme");
-      const light = attr ? attr === "light" : mq.matches;
-      if (light === rendered) return;
-      rendered = light;
+      if (!alive || !slot.current || !window.google) return;
+      const width = gisWidth(slot.current, phone.matches);
+      if (Math.abs(width - lastWidth) < 8) return;
+      lastWidth = width;
       slot.current.replaceChildren();
-      window.google!.accounts.id.renderButton(slot.current, {
+      window.google.accounts.id.renderButton(slot.current, {
         type: "standard",
-        theme: light ? "outline" : "filled_black",
+        theme: "outline",
         size: "large",
         text: "continue_with",
         shape: "pill",
         logo_alignment: "left",
-        width: 280,
+        width,
       });
+      setPhase("ready");
     };
 
-    const observer = new MutationObserver(render);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    mq.addEventListener?.("change", render);
+    const resize = new ResizeObserver(() => render());
+    const box = slot.current?.closest(".cta-row");
+    if (box) resize.observe(box);
 
     loadGis()
-      .then(() => {
-        ready = true;
-        render();
-      })
-      .catch((e: Error) => alive && setState({ busy: false, error: e.message }));
+      .then(render)
+      .catch(() => alive && setPhase("failed"));
     return () => {
       alive = false;
-      observer.disconnect();
-      mq.removeEventListener?.("change", render);
+      resize.disconnect();
       listeners.delete(setState);
     };
-  }, []);
+  }, [phase]);
+
+  if (phase === "failed") return <OAuthButton initialError={initialError} />;
 
   return (
     <>
-      <div className="gis-slot" ref={slot} aria-busy={state.busy} />
+      {/* The placeholder is a sibling: Google replaces the slot's children, which React must not own. */}
+      <div className="signin-plate" aria-busy={state.busy || phase === "loading"}>
+        {phase === "loading" && <span className="gis-placeholder" aria-hidden="true" />}
+        <div className="gis-slot" data-phase={phase} ref={slot} />
+      </div>
       <p className={`signin-note${state.error ? " bad" : ""}`} role="status" aria-live="polite">
-        {state.busy ? "Signing you in…" : state.error}
+        {state.busy ? "Signing you in…" : phase === "loading" ? <span className="sr-only">Loading Google sign-in…</span> : state.error}
       </p>
     </>
   );
@@ -153,13 +166,15 @@ function OAuthButton({ initialError }: { initialError?: string | null }) {
 
   return (
     <>
-      <button type="button" className="google-btn" aria-busy={busy} onClick={signIn}>
-        <span className="g" aria-hidden="true">
-          <IconSignIn className="" />
-        </span>
-        <span>{busy ? "Connecting to Google…" : "Continue with Google"}</span>
-        <span className="spin" aria-hidden="true" />
-      </button>
+      <div className="signin-plate">
+        <button type="button" className="google-btn" aria-busy={busy} onClick={signIn}>
+          <span className="g" aria-hidden="true">
+            <IconSignIn className="" />
+          </span>
+          <span>{busy ? "Connecting to Google…" : "Continue with Google"}</span>
+          <span className="spin" aria-hidden="true" />
+        </button>
+      </div>
       <p className={`signin-note${error ? " bad" : ""}`} role="status" aria-live="polite">
         {error}
       </p>
@@ -168,5 +183,5 @@ function OAuthButton({ initialError }: { initialError?: string | null }) {
 }
 
 export function GoogleSignIn({ initialError }: { initialError?: string | null }) {
-  return GOOGLE_CLIENT_ID ? <GisButton /> : <OAuthButton initialError={initialError} />;
+  return GOOGLE_CLIENT_ID ? <GisButton initialError={initialError} /> : <OAuthButton initialError={initialError} />;
 }

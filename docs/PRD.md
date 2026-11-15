@@ -3,7 +3,7 @@
 **Owner:** Cholo (CholoCMC)
 **Status:** Ready for build. All three pages are designed and prototyped. All questions are resolved (§11).
 **Stack:** Next.js + Tailwind CSS (frontend), Supabase (auth, Postgres, realtime)
-**Last updated:** November 14, 2026
+**Last updated:** November 15, 2026
 
 ---
 
@@ -322,39 +322,42 @@ These are stored per browser in localStorage, not in Supabase:
 **Sections:**
 1. **Nav:**
    - Logo and the name "Budget Mate" on the left.
-   - On the right: the light mode switch and a "Sign in →" link that scrolls to the sign-in button.
+   - On the right: the light mode switch and a "Sign in" link that scrolls to the sign-in button. The label stays visible on phones.
 2. **Hero:**
-   - Eyebrow: "Shared household budgeting".
+   - Eyebrow: "Shared household budgeting", in the muted color (Peso Green is kept for the sign-in action).
    - Headline: "Plan every peso. See where it went." The second sentence uses a gradient.
    - Lede: "Set a budget for each category, log what you actually spend, and see the gap every month. Your whole household works in the same tracker, so bills and due dates never fall through the cracks."
-   - **Continue with Google** button.
-   - Fine print: "Start your own household, or join one with a household code."
-   - A **preview card** on the right showing:
-     - the current month name and an "Example data" tag
-     - the nested budget-vs-actual chart with a gentle settle-in animation
-     - a legend with actual / budgeted amounts per category
-     - three KPI tiles: Budgeted, Actual, Remaining
-3. **Features ("What you can do")**, six cards:
-   - A tracker for every month: copy recurring bills from last month; due dates carry over to the same day.
-   - Categories that follow you: rename once and every expense updates; deletes ask you to confirm first.
-   - Expenses with owners and due dates: settled / partly paid / overdue at a glance; amounts formatted as you type.
-   - Budget vs actual, in one chart: category summary with remaining totals; overspending shows in red.
-   - Table or list, your call: sort by category, owner, due date, or amount; filter to a single category.
-   - One household, shared: share your household code; every member can add, edit, and delete; each person belongs to one household; works on phone and desktop, light or dark.
-4. **Private profile**, between the features and the steps:
-   - Eyebrow "Your private profile", heading "Every account, one total", and the copy "Keep the balance of each bank and e-wallet you use on your own profile, and see your total across all of them. Update a balance with one tap whenever it changes."
+   - **Continue with Google** button, on a soft green plate so it is the one green action on the page (full width on phones).
+   - Two notes under the button: "**Got a household code?** Sign in, then enter it to join." and "Google shares only your name, email, and profile photo."
+   - A **preview card** on the right showing an example shared household, tagged "Example data" (the household, people, and amounts are made up):
+     - two member avatars with "Santos household · Ana and Migs", and the current month name
+     - the nested budget-vs-actual chart with a gentle settle-in animation; one category is over budget
+     - a legend with "actual of budgeted" per category; the over-budget amount is red
+     - a key: "Outer ring: budgeted", "Inner circle: actual"
+     - three example expenses, each with its owner's avatar and name, a due day, a status pill (Over budget, Settled, Partly paid), and "actual of budgeted"
+     - Budgeted, Actual, and Remaining totals in one divided row
+3. **Benefits**, heading "Everything a monthly budget needs, and nothing it doesn't" with one line of copy, then three benefits, each a short paragraph and one detail line:
+   - **Plan the month**: budgeted amounts by category; copy recurring bills to a new month with their due dates. Detail: rename a category once and every month follows.
+   - **Share it, as equals**: everyone who joins with the household code can add, edit, and delete; each expense has an owner and a due date; changes show up without a refresh. Detail: settled, partly paid, and overdue at a glance.
+   - **See the gap**: log payments as they happen; the chart and totals show what's left, and anything over budget turns red. Detail: sort and filter in a table, or read it as a list.
+4. **Private profile**, between the benefits and the steps:
+   - Heading "Every account, one total", and the copy "Keep the balance of each bank and e-wallet you use on your own profile, and see your total across all of them. Update a balance with one tap whenever it changes."
    - Three points: "Only you can see it. Other household members can't.", "See each account's share of your total", "Separate from your household's budget".
    - A **profile preview card** beside the copy (stacked under it below 960px), tagged "Example data": the total balance, the distribution bar, five example accounts with their share bars and balances, and "Only you can see your accounts." The example accounts are made up, never a real user's data.
-5. **Getting started**, three numbered steps:
+5. **Getting started**, heading "Set up in about two minutes" and three numbered steps:
    1. **Sign in with Google**: no new password to remember.
    2. **Create or join a household**: start a new household and share its code with the people who split your bills. Got a code from someone? Enter it to join their household instead.
    3. **Plan the month**: add categories and expenses, log payments as they happen, and next month copy the recurring ones over.
-6. **Closing band:** "Your first tracker opens on {current Month Year}", followed by a second **Continue with Google** button.
+6. **Closing band:** "Your first tracker opens on {current Month Year}", followed by a second **Continue with Google** button. Before scripts run, the month shows in Manila time so the heading is never blank.
 7. **Footer:** see §6.5.
 
+Section headings carry no eyebrow labels; only the hero has one.
+
 **Google button:**
-- In production, use **Google Identity Services' official "Sign in with Google" button**. The prototype uses a neutral icon on purpose, so as not to reproduce Google's logo by hand.
-- Show a loading state while authenticating.
+- In production, use **Google Identity Services' official "Sign in with Google" button** (the white "outline" theme, which reads on both page themes). The prototype uses a neutral icon on purpose, so as not to reproduce Google's logo by hand.
+- While Google's script loads, a placeholder pill holds the button's place.
+- If Google's script fails to load, fall back to the Supabase OAuth redirect button so sign-in still works.
+- Show a loading state while authenticating, and show a sign-in error passed back as `?auth_error`.
 
 ### 6.2 Onboarding page
 

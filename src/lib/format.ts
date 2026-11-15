@@ -151,7 +151,22 @@ export const initials = (name: string) =>
 export const memberColor = (index: number) =>
   AVATAR_COLORS[((index < 0 ? 0 : index) * 3 + 1) % AVATAR_COLORS.length];
 
-export const plural = (n: number, one: string, many = one + "s") => `${n} ${n === 1 ? one : many}`;
+/**
+ * Text color for initials on a palette color: the dark ink, or white when the dark ink would fall
+ * below the contrast white gets (Indigo and Brown). Avatars use only the bright colors and keep the
+ * dark ink; account tiles can use the whole palette.
+ */
+export const inkOn = (hex: string) => {
+  const ch = (i: number) => {
+    const c = parseInt(hex.slice(i, i + 2), 16) / 255;
+    return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  };
+  const l = 0.2126 * ch(1) + 0.7152 * ch(3) + 0.0722 * ch(5);
+  const DARK_L = 0.0063; // #03140C
+  return (l + 0.05) / (DARK_L + 0.05) >= 1.05 / (l + 0.05) ? "#03140C" : "#FFFFFF";
+};
+
+export const plural =(n: number, one: string, many = one + "s") => `${n} ${n === 1 ? one : many}`;
 
 /* ---------- Derived status (PRD §4.5) ---------- */
 export type StatusKey = "over" | "settled" | "partial" | "overdue" | "upcoming";

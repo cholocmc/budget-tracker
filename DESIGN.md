@@ -12,6 +12,7 @@ colors:
   faint: "#5C8473"
   peso-green: "#3DF5A0"
   peso-green-ink: "#03140C"
+  peso-green-text: "#3DF5A0"
   lagoon: "#16B8C9"
   danger: "#FF7070"
   warn: "#F2C94C"
@@ -25,6 +26,7 @@ colors:
   faint-light: "#7B9B8D"
   peso-green-light: "#0A9C61"
   peso-green-ink-light: "#FFFFFF"
+  peso-green-text-light: "#08794B"
   lagoon-light: "#0E8FA0"
   danger-light: "#CF3F3F"
   warn-light: "#A87A06"
@@ -152,6 +154,7 @@ A near-black green field with green-tinted neutrals and one bright mint signal, 
 
 ### Primary
 - **Peso Green** (dark `peso-green`, light `peso-green-light`): the single accent. Primary buttons, the selected segment and chip, focus outlines, the Remaining KPI and positive amounts, the household code, active sort headers, the Settled status, and links in the footer. Text on it uses **Peso Green Ink** (`peso-green-ink`, light `peso-green-ink-light`).
+- **Peso Green Text** (`peso-green-text`, light `peso-green-text-light`; CSS `--accent-text`): Peso Green for small text (links, positive amounts, the Settled pill, the active chip, footer links). In dark it equals the accent; in light it is a deeper green that passes 4.5:1, because the light accent alone measures about 3.2:1 on the page.
 - **Lagoon** (`lagoon`, light `lagoon-light`): Peso Green's partner, used only as the far end of a gradient: the logo tile, the budget meter fill, the hero headline's second sentence, and the hero preview's border. Never a standalone color for UI.
 
 ### Neutral
@@ -191,7 +194,7 @@ Sixteen fixed hues (PRD §9.3), defined as `PALETTE` in code, work in both theme
 - **Headline** (700, `clamp(28px, 3.4vw, 40px)`, 1.12): landing section headings and the closing band.
 - **Title** (600, 17–24px): app page and panel headings. The month label is 24px (20px on phones), dialogs 19px, panels 17px.
 - **Body** (400, 15px, 1.5; landing 16px, 1.6): all running text. Lede and empty-state copy cap at 46–52ch.
-- **Label** (400, 11–12px, 0.08–0.16em tracking, uppercase, mono): eyebrows, field labels, table headers, stacked-card labels, tags.
+- **Label** (400, 11–12px, 0.08–0.16em tracking, uppercase, mono): eyebrows, field labels, table headers, stacked-card labels, tags. Never below 11px. Section headings carry no eyebrow above them; the landing hero's is the one exception.
 - **Numeric** (600, mono, tabular numerals): KPI values (`clamp(20px, 2.6vw, 28px)`), totals, every amount in tables, lists, and legends.
 
 ### Named Rules
@@ -220,7 +223,8 @@ Tonal at rest, lift to float. Panels, cards, and rows sit flat on the page and s
 ### Shadow Vocabulary
 - **Float** (`--shadow`: dark `0 18px 50px rgba(0,0,0,.5)`, light `0 18px 40px rgba(10,42,30,.14)`): dialogs, menus, toasts, full-screen notice cards.
 - **Float Large** (`--shadow-lg`: dark `0 30px 80px rgba(0,0,0,.55)`, light `0 30px 60px rgba(10,42,30,.16)`): the onboarding card and landing preview cards.
-- **Accent Glow** (`0 0 22px var(--glow)`): primary button hover and the logo. `--glow` is Peso Green at 30% (22% in light).
+- **Accent Glow** (`0 0 22px var(--glow)` on primary button hover; lifted `0 6px 20px var(--glow)` under the logo tile): `--glow` is Peso Green at 30% (22% in light).
+- **Sign-in Lift** (`0 12px 32px -8px var(--glow)`): under the landing sign-in plate only.
 - **Focus Halo** (`0 0 0 3px var(--accent-soft)`): focused inputs, alongside a Peso Green border.
 
 ### Named Rules
@@ -275,6 +279,9 @@ A hand-built SVG nested chart: an outer ring for budgeted and an inner pie for a
 
 ### KPI Tiles and Meter
 Three Surface tiles (Budgeted, Actual, Remaining) with a mono eyebrow, a large mono value, and a footnote. Remaining is Peso Green, or Danger when negative. The budget meter is a 6px pill track filled with a Peso Green to Lagoon gradient, which turns solid Danger when spending exceeds the budget.
+
+### Sign-in Plate (landing)
+Google's official button is an iframe that can't be restyled, so its emphasis is built around it: a 6px pill plate in soft Peso Green (`--accent-soft`) with a 45% accent inner line and the Sign-in Lift. Google's button always uses its white "outline" theme. While Google's script loads, a 300×44 placeholder pill shimmers in its place; if the script fails, the redirect button takes the plate instead. Full width on phones. Two muted notes sit under it (joining with a code, what Google shares). This plate is the one green action on the landing page, so labels, bullets, and step numbers there stay neutral.
 
 ### Toast
 A pill in inverted colors (Ink fill, Vault Black text) centered at the bottom above the safe area, with the Float shadow and `role="status"`.

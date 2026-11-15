@@ -431,7 +431,7 @@ function CategorySummary() {
                   </td>
                   <td className="num r" data-label="Budgeted">{fmtCents(r.budget)}</td>
                   <td className="num r" data-label="Actual">{fmtCents(r.actual)}</td>
-                  <td className={`num r${r.remaining < 0 ? " neg" : ""}`} data-label="Remaining">{fmtCents(r.remaining)}</td>
+                  <td className={`num r${r.remaining < 0 ? " neg" : r.remaining === 0 ? " zero" : ""}`} data-label="Remaining">{fmtCents(r.remaining)}</td>
                   <td className="act">
                     <div className="row-actions">
                       <button type="button" className="icon-btn" aria-label={`Edit ${r.cat.name}`} onClick={() => open({ kind: "category", id: r.cat.id })}>
@@ -604,7 +604,7 @@ export function ExpensesSection() {
                   <td className="mono" data-label="Created">{fmtCreated(x.created_at)}</td>
                   <td className="num r" data-label="Budgeted">{fmtCents(x.budgeted_cents)}</td>
                   <td className="num r" data-label="Actual">{fmtCents(x.actual_cents)}</td>
-                  <td className={`num r${rem < 0 ? " neg" : ""}`} data-label="Remaining">{fmtCents(rem)}</td>
+                  <td className={`num r${rem < 0 ? " neg" : rem === 0 ? " zero" : ""}`} data-label="Remaining">{fmtCents(rem)}</td>
                   <td data-label="Status">{pill(x)}</td>
                   <td className="act">{actions(x)}</td>
                 </tr>
@@ -635,7 +635,8 @@ export function ExpensesSection() {
                 </h3>
                 <span className="tot">
                   {fmtCents(a)} of {fmtCents(b)}
-                  <span className={a > b ? "neg" : "pos"}>
+                  {/* Green only while money is left (DESIGN.md One Signal Rule); a spent-out category stays quiet. */}
+                  <span className={a > b ? "neg" : a < b ? "pos" : "zero"}>
                     {a > b ? `over by ${fmtCents(a - b)}` : `${fmtCents(b - a)} left`}
                   </span>
                 </span>

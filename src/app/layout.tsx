@@ -6,7 +6,8 @@ import "./globals.css";
 
 const sora = Sora({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-sora", display: "swap" });
 const plex = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-plex", display: "swap" });
-const mono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-jetbrains", display: "swap" });
+// latin-ext carries the peso sign (U+20B1); without it ₱ falls back to a heavier system glyph next to the digits.
+const mono = JetBrains_Mono({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600"], variable: "--font-jetbrains", display: "swap" });
 
 const TITLE = "Budget Mate";
 const DESCRIPTION = "Plan every peso. Shared household budgeting with budget vs actual for every month.";

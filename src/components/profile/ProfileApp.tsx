@@ -11,7 +11,7 @@ import { useToast } from "@/components/Toast";
 import { MoneyInput } from "@/components/tracker/MoneyInput";
 import { BANK_ACCOUNT_COLUMNS, fetchBankAccounts, normalizeBankAccount } from "@/lib/data";
 import { errorCode, errorMessage } from "@/lib/errors";
-import { centsToInput, fmtCents, fmtSince, initials, inputToCents, PALETTE, PALETTE_NAMES, plural } from "@/lib/format";
+import { centsToInput, fmtCents, fmtSince, initials, inkOn, inputToCents, PALETTE, PALETTE_NAMES, plural } from "@/lib/format";
 import { getSupabase } from "@/lib/supabase/client";
 import type { BankAccount, Role } from "@/lib/types";
 
@@ -303,7 +303,7 @@ export function ProfileApp({
                 </>
               )}
               {!loadFailed && (
-                <button type="button" className="btn primary" onClick={() => setDialog({ kind: "form" })}>
+                <button type="button" className="btn primary" aria-label="Add account" onClick={() => setDialog({ kind: "form" })}>
                   <IconPlus />
                   <span className="lbl">Add account</span>
                 </button>
@@ -336,7 +336,7 @@ export function ProfileApp({
                 const isEditing = editing?.id === a.id;
                 return (
                   <li key={a.id} className={hl === a.id ? "on" : undefined} onMouseEnter={() => setHl(a.id)}>
-                    <span className="acc-tile" style={{ background: a.color }} aria-hidden="true">{tileText(a.name)}</span>
+                    <span className="acc-tile" style={{ background: a.color, color: inkOn(a.color) }} aria-hidden="true">{tileText(a.name)}</span>
                     <div className="acc-name">
                       <span className="nm">{a.name}</span>
                       <span className="meta">{pending ? "Saving…" : now ? `Updated ${fmtSince(a.updated_at, now)}` : " "}</span>

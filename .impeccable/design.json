@@ -1,49 +1,232 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-15T00:00:00Z",
+  "generatedAt": "2026-11-15T14:27:05.682Z",
   "title": "Design System: Budget Mate",
   "extensions": {
     "colorMeta": {
-      "peso-green": { "role": "primary", "displayName": "Peso Green", "canonical": "#3DF5A0", "tonalRamp": ["#04301C", "#075A35", "#0A9C61", "#18C980", "#3DF5A0", "#78F8BC", "#B2FBD8", "#E3FDF0"] },
-      "lagoon": { "role": "primary", "displayName": "Lagoon", "canonical": "#16B8C9", "tonalRamp": ["#052A2F", "#0A4B53", "#0E8FA0", "#16B8C9", "#4ACCDA", "#82DDE6", "#B9EDF2", "#E6F9FB"] },
-      "vault-black": { "role": "neutral", "displayName": "Vault Black", "canonical": "#06110D", "tonalRamp": ["#06110D", "#0C1E17", "#11281F", "#1B3B2F", "#2B5A47", "#5C8473", "#8DB2A2", "#E3F6EC"] },
-      "surface": { "role": "neutral", "displayName": "Surface", "canonical": "#0C1E17" },
-      "surface-raised": { "role": "neutral", "displayName": "Surface Raised", "canonical": "#11281F" },
-      "line": { "role": "neutral", "displayName": "Line", "canonical": "#1B3B2F" },
-      "line-strong": { "role": "neutral", "displayName": "Line Strong", "canonical": "#2B5A47" },
-      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#E3F6EC" },
-      "muted": { "role": "neutral", "displayName": "Muted", "canonical": "#8DB2A2" },
-      "faint": { "role": "neutral", "displayName": "Faint", "canonical": "#5C8473" },
-      "danger": { "role": "status", "displayName": "Danger", "canonical": "#FF7070", "tonalRamp": ["#3A0E0E", "#6B1A1A", "#CF3F3F", "#FF7070", "#FF9696", "#FFB9B9", "#FFDADA", "#FFF0F0"] },
-      "warn": { "role": "status", "displayName": "Warn", "canonical": "#F2C94C", "tonalRamp": ["#2E2304", "#5A4508", "#A87A06", "#F2C94C", "#F5D676", "#F8E3A0", "#FBEFCA", "#FEF9EC"] },
-      "peso-green-light": { "role": "primary", "displayName": "Peso Green (light theme)", "canonical": "#0A9C61" },
-      "vault-black-light": { "role": "neutral", "displayName": "Vault Black (light theme field)", "canonical": "#EDF5F0" }
+      "peso-green": {
+        "role": "primary",
+        "displayName": "Peso Green",
+        "canonical": "#3DF5A0",
+        "tonalRamp": [
+          "#04301C",
+          "#075A35",
+          "#0A9C61",
+          "#18C980",
+          "#3DF5A0",
+          "#78F8BC",
+          "#B2FBD8",
+          "#E3FDF0"
+        ]
+      },
+      "lagoon": {
+        "role": "primary",
+        "displayName": "Lagoon",
+        "canonical": "#16B8C9",
+        "tonalRamp": [
+          "#052A2F",
+          "#0A4B53",
+          "#0E8FA0",
+          "#16B8C9",
+          "#4ACCDA",
+          "#82DDE6",
+          "#B9EDF2",
+          "#E6F9FB"
+        ]
+      },
+      "vault-black": {
+        "role": "neutral",
+        "displayName": "Vault Black",
+        "canonical": "#06110D",
+        "tonalRamp": [
+          "#06110D",
+          "#0C1E17",
+          "#11281F",
+          "#1B3B2F",
+          "#2B5A47",
+          "#5C8473",
+          "#8DB2A2",
+          "#E3F6EC"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface",
+        "canonical": "#0C1E17"
+      },
+      "surface-raised": {
+        "role": "neutral",
+        "displayName": "Surface Raised",
+        "canonical": "#11281F"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Line",
+        "canonical": "#1B3B2F"
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Line Strong",
+        "canonical": "#2B5A47"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "#E3F6EC"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Muted",
+        "canonical": "#8DB2A2"
+      },
+      "faint": {
+        "role": "neutral",
+        "displayName": "Faint",
+        "canonical": "#5C8473"
+      },
+      "danger": {
+        "role": "status",
+        "displayName": "Danger",
+        "canonical": "#FF7070",
+        "tonalRamp": [
+          "#3A0E0E",
+          "#6B1A1A",
+          "#CF3F3F",
+          "#FF7070",
+          "#FF9696",
+          "#FFB9B9",
+          "#FFDADA",
+          "#FFF0F0"
+        ]
+      },
+      "warn": {
+        "role": "status",
+        "displayName": "Warn",
+        "canonical": "#F2C94C",
+        "tonalRamp": [
+          "#2E2304",
+          "#5A4508",
+          "#A87A06",
+          "#F2C94C",
+          "#F5D676",
+          "#F8E3A0",
+          "#FBEFCA",
+          "#FEF9EC"
+        ]
+      },
+      "peso-green-light": {
+        "role": "primary",
+        "displayName": "Peso Green (light theme)",
+        "canonical": "#0A9C61"
+      },
+      "vault-black-light": {
+        "role": "neutral",
+        "displayName": "Vault Black (light theme field)",
+        "canonical": "#EDF5F0"
+      },
+      "peso-green-text": {
+        "role": "primary",
+        "displayName": "Peso Green Text",
+        "canonical": "#3DF5A0"
+      },
+      "peso-green-text-light": {
+        "role": "primary",
+        "displayName": "Peso Green Text (light theme)",
+        "canonical": "#08794B"
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Landing hero headline only." },
-      "headline": { "displayName": "Headline", "purpose": "Landing section headings and the closing band." },
-      "title": { "displayName": "Title", "purpose": "App page, panel, month-label, and dialog headings (17-24px)." },
-      "body": { "displayName": "Body", "purpose": "All running text; 16px/1.6 on the landing page." },
-      "label": { "displayName": "Label", "purpose": "Uppercase mono eyebrows, field labels, table headers, tags." },
-      "numeric": { "displayName": "Numeric", "purpose": "Every amount, code, count, and percentage, in tabular mono." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Landing hero headline only."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Landing section headings and the closing band."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "App page, panel, month-label, and dialog headings (17-24px)."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All running text; 16px/1.6 on the landing page."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase mono eyebrows, field labels, table headers, tags."
+      },
+      "numeric": {
+        "displayName": "Numeric",
+        "purpose": "Every amount, code, count, and percentage, in tabular mono."
+      }
     },
     "shadows": [
-      { "name": "float", "value": "var(--shadow)", "purpose": "Dialogs, menus, toasts, notice cards. Dark 0 18px 50px rgba(0,0,0,.5); light 0 18px 40px rgba(10,42,30,.14)." },
-      { "name": "float-large", "value": "var(--shadow-lg)", "purpose": "Onboarding card and landing preview cards." },
-      { "name": "accent-glow", "value": "0 0 22px var(--glow)", "purpose": "Primary button hover and the logo tile. Only Peso Green glows." },
-      { "name": "focus-halo", "value": "0 0 0 3px var(--accent-soft)", "purpose": "Focused inputs, with a Peso Green border." }
+      {
+        "name": "float",
+        "value": "var(--shadow)",
+        "purpose": "Dialogs, menus, toasts, notice cards. Dark 0 18px 50px rgba(0,0,0,.5); light 0 18px 40px rgba(10,42,30,.14)."
+      },
+      {
+        "name": "float-large",
+        "value": "var(--shadow-lg)",
+        "purpose": "Onboarding card and landing preview cards."
+      },
+      {
+        "name": "accent-glow",
+        "value": "0 0 22px var(--glow)",
+        "purpose": "Primary button hover (0 0 22px) and, lifted to 0 6px 20px, under the logo tile. Only Peso Green glows."
+      },
+      {
+        "name": "focus-halo",
+        "value": "0 0 0 3px var(--accent-soft)",
+        "purpose": "Focused inputs, with a Peso Green border."
+      },
+      {
+        "name": "signin-lift",
+        "value": "0 12px 32px -8px var(--glow)",
+        "purpose": "Under the landing sign-in plate only."
+      }
     ],
     "motion": [
-      { "name": "state", "value": ".15s", "purpose": "Border, background, and shadow changes on hover and focus." },
-      { "name": "settle", "value": "1.1s cubic-bezier(.2,.8,.2,1)", "purpose": "Landing preview chart settle-in rotation." },
-      { "name": "grow", "value": ".9s cubic-bezier(.2,.8,.2,1)", "purpose": "Landing profile preview share bars growing in." },
-      { "name": "reduced-motion", "value": "none", "purpose": "prefers-reduced-motion turns off every animation and transition." }
+      {
+        "name": "state",
+        "value": ".15s",
+        "purpose": "Border, background, and shadow changes on hover and focus."
+      },
+      {
+        "name": "settle",
+        "value": "1.1s cubic-bezier(.2,.8,.2,1)",
+        "purpose": "Landing preview chart settle-in rotation."
+      },
+      {
+        "name": "grow",
+        "value": ".9s cubic-bezier(.2,.8,.2,1)",
+        "purpose": "Landing profile preview share bars growing in."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "none",
+        "purpose": "prefers-reduced-motion turns off every animation and transition."
+      }
     ],
     "breakpoints": [
-      { "name": "tiny", "value": "380px" },
-      { "name": "phone", "value": "640px" },
-      { "name": "stack", "value": "900px" },
-      { "name": "landing-stack", "value": "960px" }
+      {
+        "name": "tiny",
+        "value": "380px"
+      },
+      {
+        "name": "phone",
+        "value": "640px"
+      },
+      {
+        "name": "stack",
+        "value": "900px"
+      },
+      {
+        "name": "landing-stack",
+        "value": "960px"
+      }
     ]
   },
   "components": [
@@ -108,6 +291,13 @@
       "description": "Flat Surface tile: mono eyebrow, large mono value, gradient budget meter.",
       "html": "<div class=\"ds-kpi\"><span class=\"ds-eyebrow\">Remaining</span><b>₱4,820.00</b><span class=\"ds-meter\"><i style=\"width:62%\"></i></span><span class=\"ds-foot\">62% of budget spent</span></div>",
       "css": ".ds-kpi { width: 260px; padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); display: flex; flex-direction: column; gap: 6px; } .ds-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); } .ds-kpi b { font-family: var(--font-mono); font-size: 28px; font-weight: 600; font-variant-numeric: tabular-nums; color: var(--accent); } .ds-meter { display: block; height: 6px; border-radius: 99px; background: var(--surface-2); border: 1px solid var(--line); overflow: hidden; } .ds-meter i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 99px; } .ds-foot { font-family: var(--font-body); font-size: 12px; color: var(--muted); }"
+    },
+    {
+      "name": "Sign-in Plate",
+      "kind": "custom",
+      "description": "Soft green plate around Google's white sign-in button: the one green action on the landing page.",
+      "html": "<div class=\"ds-plate\"><button class=\"ds-gbtn\">Continue with Google</button></div>",
+      "css": ".ds-plate { display: inline-flex; padding: 6px; border-radius: 999px; background: var(--accent-soft); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent), 0 12px 32px -8px var(--glow); } .ds-gbtn { min-width: 300px; height: 44px; border-radius: 999px; border: 1px solid #dadce0; background: #fff; color: #1f1f1f; font-family: var(--font-body); font-size: 14px; font-weight: 500; cursor: pointer; } .ds-gbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }"
     }
   ],
   "narrative": {
@@ -121,13 +311,41 @@
       "Depth from tone and 1px lines at rest; shadows only for things that float."
     ],
     "rules": [
-      { "name": "The One Signal Rule", "body": "Peso Green means \"act here\", \"this is selected\", or \"on plan\". If a green element is none of those, it should be a neutral.", "section": "colors" },
-      { "name": "The Never Color Alone Rule", "body": "Every status pill carries a dot and a text label. Red or amber is never the only way a state is shown.", "section": "colors" },
-      { "name": "The Tokens Only Rule", "body": "UI colors come from the CSS variables on `:root` (or the Tailwind names mapped to them). A new hex in a component is a bug unless it belongs to the category palette or logo gradient.", "section": "colors" },
-      { "name": "The Mono Money Rule", "body": "Every peso amount, household code, count, and percentage is set in JetBrains Mono with tabular numerals, so columns line up and numbers read as data.", "section": "typography" },
-      { "name": "The Real Case Rule", "body": "Labels are uppercase mono, except a label that quotes text the user must type exactly (a category or household name to confirm a delete). That label keeps the real case in body type.", "section": "typography" },
-      { "name": "The Flat Panel Rule", "body": "A panel that lives in the page flow never gets a drop shadow. If it needs separation, step its tone or strengthen its line.", "section": "elevation" },
-      { "name": "The Green Light Rule", "body": "Only Peso Green glows. Neutral, danger, and warn elements never get a glow.", "section": "elevation" }
+      {
+        "name": "The One Signal Rule",
+        "body": "Peso Green means \"act here\", \"this is selected\", or \"on plan\". If a green element is none of those, it should be a neutral.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never Color Alone Rule",
+        "body": "Every status pill carries a dot and a text label. Red or amber is never the only way a state is shown.",
+        "section": "colors"
+      },
+      {
+        "name": "The Tokens Only Rule",
+        "body": "UI colors come from the CSS variables on `:root` (or the Tailwind names mapped to them). A new hex in a component is a bug unless it belongs to the category palette or logo gradient.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono Money Rule",
+        "body": "Every peso amount, household code, count, and percentage is set in JetBrains Mono with tabular numerals, so columns line up and numbers read as data.",
+        "section": "typography"
+      },
+      {
+        "name": "The Real Case Rule",
+        "body": "Labels are uppercase mono, except a label that quotes text the user must type exactly (a category or household name to confirm a delete). That label keeps the real case in body type.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat Panel Rule",
+        "body": "A panel that lives in the page flow never gets a drop shadow. If it needs separation, step its tone or strengthen its line.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Green Light Rule",
+        "body": "Only Peso Green glows. Neutral, danger, and warn elements never get a glow.",
+        "section": "elevation"
+      }
     ],
     "dos": [
       "Do use CSS variables (`var(--accent)`, `bg-surface`, `text-muted`, `border-line`) for every UI color, and check both themes.",
