@@ -16,7 +16,6 @@ import {
 import { AccountMenu } from "@/components/AccountMenu";
 import { Avatar } from "@/components/Avatar";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
-import { arcPath } from "@/lib/chart";
 import {
   fmtCents,
   fmtDue,
@@ -30,10 +29,11 @@ import {
   shiftMonthKey,
   statusOf,
 } from "@/lib/format";
-import type { Category, Expense } from "@/lib/types";
+import type { Expense } from "@/lib/types";
 import { Term } from "@/components/Tooltip";
 import { useTracker, type SortKey } from "./context";
 import { SPLIT_DEFAULT, SPLIT_MAX, SPLIT_MIN } from "./context";
+import { ChartPanel, useSummary } from "./charts";
 
 /* ---------- Header (PRD §6.3.1) ---------- */
 export function Header() {
@@ -176,25 +176,6 @@ export function EmptyMonth() {
   );
 }
 
-/* ---------- Summary math ---------- */
-export type SummaryRow = { cat: Category; count: number; alloc: number; budget: number; actual: number; remaining: number };
-export function useSummary() {
-  const { state, expenses } = useTracker();
-  return useMemo(() => {
-    const list = expenses ?? [];
-    const rows: SummaryRow[] = state.categories.map((c) => {
-      const ex = list.filter((x) => x.category_id === c.id);
-      const budget = ex.reduce((s, x) => s + x.budgeted_cents, 0);
-      const actual = ex.reduce((s, x) => s + x.actual_cents, 0);
-      return { cat: c, count: ex.length, alloc: c.allocated_cents, budget, actual, remaining: budget - actual };
-    });
-    const alloc = rows.reduce((s, r) => s + r.alloc, 0);
-    const budget = rows.reduce((s, r) => s + r.budget, 0);
-    const actual = rows.reduce((s, r) => s + r.actual, 0);
-    return { rows, tot: { alloc, budget, actual, remaining: budget - actual, count: list.length } };
-  }, [state.categories, expenses]);
-}
-
 /* ---------- What each total means, for the KPI and summary-header tooltips (PRD §6.3.5) ---------- */
 const TIPS = {
   kpiAllocated: "What the household sets aside each month, added up across every category. Set it when you add or edit a category.",
@@ -300,12 +281,7 @@ export function ChartSummary() {
 
   return (
     <section className="split" ref={splitRef} style={{ ["--left" as string]: `${split}%` }}>
-      <div className="panel chart-panel">
-        <div className="panel-head">
-          <h2>Budget vs actual</h2>
-        </div>
-        <BudgetChart />
-      </div>
+      <ChartPanel />
       <div
         className={`resizer${dragging ? " dragging" : ""}`}
         role="separator"
@@ -322,103 +298,6 @@ export function ChartSummary() {
       />
       <CategorySummary />
     </section>
-  );
-}
-
-/* ---------- Nested pie: outer ring budgeted, inner pie actual ---------- */
-function BudgetChart() {
-  const { rows, tot } = useSummary();
-  const [active, setActive] = useState<string | null>(null);
-  if (!rows.length) {
-    return (
-      <div className="empty">
-        <p>The chart appears once you add categories and expenses.</p>
-      </div>
-    );
-  }
-  const pctOf = (v: number, total: number) => (total ? ((v / total) * 100).toFixed(1) : "0.0");
-  const ring = (key: "budget" | "actual", total: number, rO: number, rI: number, label: string) => {
-    if (!total) {
-      return (
-        <circle cx="120" cy="120" r={rI ? (rO + rI) / 2 : rO / 2} fill="none" stroke="var(--line-strong)" strokeWidth={rI ? rO - rI : rO} strokeDasharray="3 5" />
-      );
-    }
-    let a = 0;
-    return rows
-      .filter((r) => r[key] > 0)
-      .map((r) => {
-        const span = (r[key] / total) * Math.PI * 2;
-        const d = arcPath(120, 120, rO, rI, a, a + span);
-        a += span;
-        return (
-          <path
-            key={`${key}-${r.cat.id}`}
-            className={`slice${active === r.cat.id ? " on" : ""}`}
-            d={d}
-            fill={r.cat.color}
-            tabIndex={0}
-            aria-label={`${r.cat.name} ${label}: ${fmtCents(r[key])}`}
-            onMouseEnter={() => setActive(r.cat.id)}
-            onMouseLeave={() => setActive(null)}
-            onFocus={() => setActive(r.cat.id)}
-            onBlur={() => setActive(null)}
-            onClick={() => setActive(r.cat.id)}
-          />
-        );
-      });
-  };
-  const r = rows.find((x) => x.cat.id === active);
-  return (
-    <div className={`chart-wrap${active ? " hovering" : ""}`}>
-      <svg viewBox="0 0 240 240" role="img" aria-label="Budgeted by category in the outer ring, actual by category in the inner pie">
-        {ring("budget", tot.budget, 116, 86, "budgeted")}
-        {ring("actual", tot.actual, 76, 0, "actual")}
-      </svg>
-      <div className="chart-key">
-        <div className="key-legend">
-          <span><i className="ring-ico" />Outer ring: budgeted</span>
-          <span>·</span>
-          <span><i className="pie-ico" />Inner pie: actual</span>
-        </div>
-        {/* Readout sits above the legend so it stays in view when there are many categories. */}
-        <div className="readout" aria-live="polite">
-          {r ? (
-            <>
-              <b className="ro-name">{r.cat.name}</b>
-              <span className="ro-line">
-                Budgeted <b className="mono">{fmtCents(r.budget)}</b> ({pctOf(r.budget, tot.budget)}%)
-              </span>
-              <span className="ro-line">
-                Actual <b className="mono">{fmtCents(r.actual)}</b> ({pctOf(r.actual, tot.actual)}%)
-              </span>
-            </>
-          ) : (
-            "Hover or tap a slice or category to see its amounts."
-          )}
-        </div>
-        <ul className="legend">
-          {rows.map((row) => (
-            <li
-              key={row.cat.id}
-              className={active === row.cat.id ? "on" : ""}
-              tabIndex={0}
-              onMouseEnter={() => setActive(row.cat.id)}
-              onMouseLeave={() => setActive(null)}
-              onFocus={() => setActive(row.cat.id)}
-              onBlur={() => setActive(null)}
-              onClick={() => setActive(row.cat.id)}
-            >
-              <span className="sw" style={{ background: row.cat.color }} />
-              <span className="nm">{row.cat.name}</span>
-              <span className="pcs">
-                <span>Budget <b>{pctOf(row.budget, tot.budget)}%</b></span>
-                <span>Actual <b>{pctOf(row.actual, tot.actual)}%</b></span>
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
   );
 }
 

@@ -314,6 +314,7 @@ These are stored per browser in localStorage, not in Supabase:
 - theme (key `finance-tracker-theme`)
 - table/list view
 - the chart/summary split width
+- the Budget vs actual chart view (key `finance-tracker-chart`, §6.3.5)
 - the order of the tracker's sections (key `finance-tracker-rows`, §6.3.1)
 
 ---
@@ -515,7 +516,8 @@ Section headings carry no eyebrow labels; only the hero has one.
   - Below 900px the tiles show as 2 × 2. Below 380px they stack into one column.
 - **Explanations:** each KPI label and each Category summary column header has a tooltip saying what the value means. It opens on mouse hover, keyboard focus, or tap, and closes on Esc, scroll, or a tap elsewhere; screen readers get the same text as the label's description.
 - **Budget vs actual chart** (card):
-  - A nested pie:
+  - A **chart switcher** in the card header (a segmented control: **Pie · Bars · Status · Trend**) picks one of four views. The default is Pie, and the choice is saved per device (§5.3).
+  - **Pie** view, a nested pie:
     - The **outer ring** shows each category's share of the **budgeted** total.
     - The **inner pie** shows each category's share of the **actual** total.
     - Each ring is 100% of its own total.
@@ -526,6 +528,16 @@ Section headings carry no eyebrow labels; only the hero has one.
   - **Legend:** for each category, a swatch and its name on the first line, then "Budget X.X% · Actual Y.Y%" on a second line. The legend flows into as many columns as fit.
   - **Interaction:** hovering, tapping, or keyboard-focusing a slice or legend row highlights that category (other slices dim) and updates a readout with the category's budgeted and actual amounts and percentages.
   - **Responsive:** the layout depends on the card's own width (container query), not the screen width. Below 560px the legend sits under the chart; above that, beside it.
+  - **Bars** view: one bullet bar per category, all on one shared scale.
+    - A wide light bar is the budgeted amount, a thin solid bar inside it is the actual amount (both in the category color), and a vertical tick marks the allocation when one is set.
+    - Each row shows the name, "{actual} of {budgeted}", and underneath "{x} left" or "Over by {x}" (red), plus "Allocated {x}" or "{x} over allocation" (red).
+    - A key reads "Budgeted · Actual · Allocated". Hovering, tapping, or focusing a row highlights it and dims the others.
+  - **Status** view: this month's expenses grouped by derived status (§4.5), in the order Over budget, Overdue, Partly paid, Upcoming, Settled. Statuses with no expenses are left out.
+    - A header shows **Left to pay** (the sum of each expense's unpaid budget), **Settled** ("{n} of {N}"), and **Overdue** (red, only when something is overdue).
+    - Each status row has its status pill, the expense count, an amount ("{x} paid", "{x} of {y} paid", "{x} due", or "Over by {x}"), and a bar showing its share of the month's budgeted total (or of the expense count when nothing is budgeted).
+  - **Trend** view: budgeted and actual totals for the household's last six trackers up to the viewed month, as paired columns on one axis (budgeted in a neutral color, actual in accent, or red when over budget).
+    - The readout shows the viewed month by default, and the hovered, tapped, or focused month otherwise: "Budgeted {x}" and "Actual {y} ({z}% used)" or "(over by {x})".
+    - Past months are loaded when the view opens; the viewed month uses live data. With only one tracker it adds "The trend fills in as your household tracks more months."
 - **Category summary** (card):
   - A table with columns Category (swatch, name, and expense count for this month), Allocated, Budgeted (red when over the allocation, §4.4.7), Actual, Remaining (red when negative), and edit/delete actions.
   - It lists **all** household categories, including ones with no expenses this month.

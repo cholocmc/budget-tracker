@@ -332,6 +332,74 @@ body.resizing { cursor: col-resize; user-select: none; }
 .readout { font-size: 15px; line-height: 22px; color: var(--muted); height: calc(3 * 22px + 10px); border-bottom: 1px solid var(--line); padding-bottom: 10px; display: flex; flex-direction: column; justify-content: center; }
 .readout .ro-name, .readout .ro-line { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .readout b { color: var(--fg); font-weight: 600; }
+.readout .neg { color: var(--danger); }
+
+/* Chart view switcher (PRD §6.3.5). Text-only buttons, so the labels stay on small phones. */
+/* One weight for every state, so switching views never changes the control's width and rewraps the header. */
+.chart-seg button, .chart-seg button[aria-pressed="true"] { padding: 5px 11px; font-weight: 500; }
+@media (pointer: coarse) { .chart-seg button { padding: 0 12px; min-height: 40px; } }
+.chart-note { font-size: 12px; color: var(--faint); }
+/* Key swatches: neutral in Bars (the bars wear category colors), accent/danger in Trend. */
+.key-sw { width: 12px; height: 8px; border-radius: 2px; background: var(--accent); display: inline-block; }
+.cbars .key-sw { background: var(--muted); }
+.cbars .key-sw.soft { opacity: .35; }
+.key-sw.budget { background: var(--faint); opacity: .55; }
+.key-sw.over { background: var(--danger); }
+.key-tick { width: 2px; height: 12px; background: var(--fg); display: inline-block; border-radius: 1px; }
+
+/* Bars: one bullet bar per category */
+.cbars { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.cb-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+.cb-row { padding: 8px; border-radius: 8px; display: flex; flex-direction: column; gap: 6px; transition: opacity .15s, background .15s; min-width: 0; }
+.cb-row.on { background: var(--surface-2); }
+.cbars.hovering .cb-row:not(.on) { opacity: .45; }
+.cb-row:focus-visible { outline-offset: 0; }
+.cb-top { display: grid; grid-template-columns: 10px minmax(0,1fr) auto; gap: 8px; align-items: center; font-size: 13.5px; }
+.cb-top .sw { width: 10px; height: 10px; border-radius: 3px; }
+.cb-top .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cb-amt { font-family: var(--font-mono); font-size: 12.5px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cb-amt small { color: var(--muted); font-size: 12px; }
+.cb-track { position: relative; height: 14px; }
+.cb-track i { position: absolute; left: 0; display: block; }
+.cb-budget { top: 0; height: 14px; border-radius: 0 4px 4px 0; opacity: .32; }
+.cb-actual { top: 4px; height: 6px; border-radius: 0 3px 3px 0; }
+.cb-alloc { top: -2px; width: 2px; height: 18px; margin-left: -1px; background: var(--fg); border-radius: 1px; }
+.cb-foot { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2px 12px; font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.cb-foot .neg { color: var(--danger); }
+
+/* Status: expenses by derived status */
+.status-chart { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.st-head { display: flex; flex-wrap: wrap; gap: 10px 24px; padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.st-head > div { display: flex; flex-direction: column; gap: 2px; }
+.st-head b { font-size: 18px; font-weight: 600; }
+.st-head .neg b { color: var(--danger); }
+.st-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.st-row { display: flex; flex-direction: column; gap: 6px; }
+.st-top { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font-size: 13px; }
+.st-cnt { color: var(--muted); }
+.st-amt { margin-left: auto; font-family: var(--font-mono); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.st-track { height: 8px; border-radius: 4px; background: var(--surface-2); overflow: hidden; }
+.st-track i { display: block; height: 100%; border-radius: 0 4px 4px 0; background: var(--line-strong); }
+.st-settled .st-track i { background: var(--accent); }
+.st-partial .st-track i { background: var(--warn); }
+.st-over .st-track i, .st-overdue .st-track i { background: var(--danger); }
+.st-over .st-amt { color: var(--danger); }
+
+/* Trend: monthly totals */
+.trend { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.trend-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.trend-svg .grid-line { stroke: var(--line); stroke-width: 1; }
+.trend-svg .base-line { stroke: var(--line-strong); stroke-width: 1; }
+.trend-svg .axis-lbl { fill: var(--muted); font-family: var(--font-mono); font-size: 10px; }
+.trend-svg .tr-col.current .axis-lbl.month { fill: var(--fg); font-weight: 600; }
+.trend-svg .hit { fill: transparent; }
+.tr-col { cursor: pointer; outline: none; transition: opacity .15s; }
+.tr-col:focus-visible .hit { fill: var(--surface-2); }
+.tr-col.on .hit { fill: var(--surface-2); }
+.trend.hovering .tr-col:not(.on) { opacity: .45; }
+.tr-budget { fill: var(--faint); opacity: .55; }
+.tr-actual { fill: var(--accent); }
+.tr-actual.over { fill: var(--danger); }
 
 /* Tables */
 /* position: relative keeps absolutely positioned children (e.g. .sr-only header labels) inside the scroll box,
