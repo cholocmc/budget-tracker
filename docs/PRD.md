@@ -346,16 +346,21 @@ These are stored per browser in localStorage, not in Supabase:
    - **Plan the month**: budgeted amounts by category; copy recurring bills to a new month with their due dates. Detail: rename a category once and every month follows.
    - **Share it, as equals**: everyone who joins with the household code can add, edit, and delete; each expense has an owner and a due date; changes show up without a refresh. Detail: settled, partly paid, and overdue at a glance.
    - **See the gap**: log payments as they happen; the chart and totals show what's left, and anything over budget turns red. Detail: sort and filter in a table, or read it as a list.
-4. **Private profile**, between the benefits and the steps:
+4. **Charts**, between the benefits and the private profile:
+   - Heading "Four ways to read the month", and the copy "Switch the chart to fit the question you have. See where the money went, which categories are near their limit, what's still unpaid, and how this month compares with the ones before it."
+   - A list naming each view: **Pie** "Each category's share of the budget and of what was spent", **Bars** "Budgeted, spent, and allocated for every category, on one scale", **Status** "What's settled, partly paid, overdue, or over budget", **Trend** "Your last six months side by side".
+   - A **charts preview card** on the left (under the copy below 960px), tagged "Example data": "Budget vs actual" with "Santos household · {current Month Year}", the tracker's Pie · Bars · Status · Trend switcher, and the selected chart, drawn by the same components as the tracker (§6.3.5). It opens on Bars, since the hero already shows the pie. The data is the hero's example household, extended with allocations, twelve expenses, and five earlier months; it is made up.
+   - The card keeps one height across views on desktop, so switching charts doesn't move the page.
+5. **Private profile**, between the charts and the steps:
    - Heading "Every account, one total", and the copy "Keep the balance of each bank and e-wallet you use on your own profile, and see your total across all of them. Update a balance with one tap whenever it changes."
    - Three points: "Only you can see it. Other household members can't.", "See each account's share of your total", "Separate from your household's budget".
    - A **profile preview card** beside the copy (stacked under it below 960px), tagged "Example data": the total balance, the distribution bar, five example accounts with their share bars and balances, and "Only you can see your accounts." The example accounts are made up, never a real user's data.
-5. **Getting started**, heading "Set up in about two minutes" and three numbered steps:
+6. **Getting started**, heading "Set up in about two minutes" and three numbered steps:
    1. **Sign in with Google**: no new password to remember.
    2. **Create or join a household**: start a new household and share its code with the people who split your bills. Got a code from someone? Enter it to join their household instead.
    3. **Plan the month**: add categories and expenses, log payments as they happen, and next month copy the recurring ones over.
-6. **Closing band:** "Your first tracker opens on {current Month Year}", followed by a second **Continue with Google** button. Before scripts run, the month shows in Manila time so the heading is never blank.
-7. **Footer:** see §6.5.
+7. **Closing band:** "Your first tracker opens on {current Month Year}", followed by a second **Continue with Google** button. Before scripts run, the month shows in Manila time so the heading is never blank.
+8. **Footer:** see §6.5.
 
 Section headings carry no eyebrow labels; only the hero has one.
 

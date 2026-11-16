@@ -783,6 +783,19 @@ body.resizing { cursor: col-resize; user-select: none; }
   & .checks { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; font-size: 15px; }
   & .checks li { display: flex; gap: 10px; align-items: baseline; }
   & .checks li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--line-strong); flex: none; transform: translateY(-2px); }
+  /* Charts showcase (PRD §6.1): the card leads on the left for rhythm against the profile section below. */
+  & .showcase.flip { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); }
+  & .showcase.flip .preview { order: -1; }
+  & .checks.views li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; color: var(--muted); }
+  & .checks.views li::before { display: none; }
+  & .checks.views b { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; letter-spacing: .04em; color: var(--fg); }
+  & .cs-title { display: flex; flex-direction: column; min-width: 0; line-height: 1.35; }
+  & .cs-title b { font-family: var(--font-display); font-size: 18px; font-weight: 600; }
+  & .cs-title .pv-sub { font-size: 13px; }
+  & .cs .chart-seg { align-self: flex-start; }
+  /* Room for the tallest view, so switching charts doesn't move the page. */
+  & .cs-body { min-height: 510px; font-size: 15px; line-height: 1.5; }
+  & .cs .chart-wrap svg { max-width: 180px; }
   & .pf { gap: 16px; }
   & .pf .pv-head { align-items: flex-start; }
   & .pf-total { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
@@ -824,7 +837,8 @@ body.resizing { cursor: col-resize; user-select: none; }
     & .hero { grid-template-columns: minmax(0,1fr); gap: 40px; padding-block: 24px 48px; }
     & .benefits-wrap { grid-template-columns: minmax(0,1fr); gap: 32px; }
     & .benefits-wrap .sec-head { position: static; }
-    & .showcase { grid-template-columns: minmax(0,1fr); gap: 32px; }
+    & .showcase, & .showcase.flip { grid-template-columns: minmax(0,1fr); gap: 32px; }
+    & .showcase.flip .preview { order: 0; }
   }
   @media (max-width: 640px) {
     & section { padding-block: 36px; }

@@ -1,19 +1,9 @@
 import { arcPath } from "@/lib/chart";
 import { CurrentMonth } from "@/components/CurrentMonth";
+import { CATEGORIES as DATA, MEMBERS } from "./example";
 
-// Example household for the marketing preview (PRD §6.1). The card is tagged "Example data"; the people,
-// categories, and amounts are made up. Amounts are whole pesos.
-const MEMBERS = [
-  { name: "Ana", initial: "A", color: "#22D88F" },
-  { name: "Migs", initial: "M", color: "#F2B53C" },
-];
-const DATA = [
-  { name: "Rent", color: "#7B6CF0", b: 18000, a: 18000 },
-  { name: "Groceries", color: "#16B8C9", b: 12000, a: 7350 },
-  { name: "Tuition", color: "#3FA7F5", b: 9500, a: 4750 },
-  { name: "Utilities", color: "#EF6F8E", b: 6500, a: 7120 },
-  { name: "Transport", color: "#9BD93B", b: 4000, a: 2600 },
-];
+// Example household for the marketing preview (PRD §6.1); the shared example data lives in ./example.
+
 // A few of the month's expenses, one per status worth showing: who pays it, when it's due, where it stands.
 const BILLS = [
   { name: "Meralco", owner: 0, due: "Due the 18th", a: 4620, b: 4000, status: ["over", "Over budget"] },

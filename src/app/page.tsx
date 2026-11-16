@@ -2,6 +2,7 @@ import { CurrentMonth } from "@/components/CurrentMonth";
 import { Footer } from "@/components/Footer";
 import { GoogleSignIn } from "@/components/GoogleSignIn";
 import { LogoMark } from "@/components/Icons";
+import { ChartsPreview } from "@/components/landing/ChartsPreview";
 import { PreviewCard } from "@/components/landing/PreviewCard";
 import { ProfilePreview } from "@/components/landing/ProfilePreview";
 import { ThemeSwitch } from "@/components/ThemeSwitch";
@@ -86,6 +87,25 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      <section aria-labelledby="v-title">
+        <div className="lwrap showcase flip">
+          <div className="sec-head">
+            <h2 id="v-title">Four ways to read the month</h2>
+            <p>
+              Switch the chart to fit the question you have. See where the money went, which categories are near
+              their limit, what&apos;s still unpaid, and how this month compares with the ones before it.
+            </p>
+            <ul className="checks views">
+              <li><b>Pie</b> Each category&apos;s share of the budget and of what was spent</li>
+              <li><b>Bars</b> Budgeted, spent, and allocated for every category, on one scale</li>
+              <li><b>Status</b> What&apos;s settled, partly paid, overdue, or over budget</li>
+              <li><b>Trend</b> Your last six months side by side</li>
+            </ul>
+          </div>
+          <ChartsPreview />
         </div>
       </section>
 
