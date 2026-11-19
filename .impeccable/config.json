@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "${family.replace(/",
+        "createdAt": "2026-11-19T06:56:35.594Z",
+        "reason": "Claude triage: the match is a template expression in loadFont's Google Fonts URL; it's called only with Sora and IBM Plex Sans, which are both in DESIGN.md typography"
+      }
+    ]
+  }
+}
