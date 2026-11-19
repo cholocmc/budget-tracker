@@ -1,4 +1,4 @@
-# PRD: Budget Mate
+# PRD: BudgetMate
 
 **Owner:** Cholo (CholoCMC)
 **Status:** Ready for build. All three pages are designed and prototyped. All questions are resolved (§11).
@@ -9,7 +9,7 @@
 
 ## 1. Overview
 
-Budget Mate is a shared household budgeting web app. A household keeps one tracker per month. Each tracker holds expenses grouped into categories. For each expense, members record the **budgeted** amount and the **actual** amount, and the app shows the gap per category and for the whole month.
+BudgetMate is a shared household budgeting web app. A household keeps one tracker per month. Each tracker holds expenses grouped into categories. For each expense, members record the **budgeted** amount and the **actual** amount, and the app shows the gap per category and for the whole month.
 
 Users sign in with Google. Each user belongs to exactly one household. They either create a household or join an existing one with a household code. Every member of a household has the same permissions.
 
@@ -327,7 +327,7 @@ These are stored per browser in localStorage, not in Supabase:
 
 **Sections:**
 1. **Nav:**
-   - Logo and the name "Budget Mate" on the left.
+   - Logo and the name "BudgetMate" on the left.
    - On the right: the light mode switch and a "Sign in" link that scrolls to the sign-in button. The label stays visible on phones.
 2. **Hero:**
    - Eyebrow: "Shared household budgeting", in the muted color (Peso Green is kept for the sign-in action).
@@ -617,9 +617,9 @@ Section headings carry no eyebrow labels; only the hero has one.
 
 ### 6.5 Footer (all pages)
 - Left-aligned, three lines:
-  1. The logo, **Budget Mate**, and a muted "Built by **First Mate**".
+  1. The logo, **BudgetMate**, and a muted "Built by **First Mate**".
   2. "Free shared household budgeting app for the Philippines, built by **First Mate Technologies**."
-  3. "© {current year} Budget Mate".
+  3. "© {current year} BudgetMate".
 - **First Mate** and **First Mate Technologies** link to `https://www.firstmate.tech/` and open in a new tab (`target="_blank" rel="noopener"`).
 
 ### 6.6 Live sync (required)
@@ -668,7 +668,7 @@ A private page where each user keeps the balances of their banks and e-wallets. 
 
 **Header:**
 - A back button that goes to `/tracker` ("Back to tracker"), or to `/onboarding` when the user has no household.
-- The logo, the title "Profile", and the subtitle "{household} · Budget tracker" ("Budget Mate" with no household).
+- The logo, the title "Profile", and the subtitle "{household} · Budget tracker" ("BudgetMate" with no household).
 - The light mode switch and a **Sign out** button.
 
 **You card** (left column on desktop, on top on phones):
@@ -699,7 +699,7 @@ A private page where each user keeps the balances of their banks and e-wallets. 
 
 **Delete dialog:**
 - Title "Delete {name}?". A warning box: "This can't be undone." then "{name} and its {balance} balance come off your profile. Your total goes from {total} to {new total}."
-- Note: "This only removes it from Budget Mate. Nothing changes at your bank."
+- Note: "This only removes it from BudgetMate. Nothing changes at your bank."
 - Buttons: **Keep account** and **Delete account** (danger). Toast: "Deleted {name}".
 
 **Saving:** writes are optimistic and roll back on error. Updates keep the `updated_at` guard; when no row matches, the list reloads with the message "This account changed in another tab. Showing the latest balance." This page has no live sync.

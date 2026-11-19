@@ -173,7 +173,7 @@ export function OnboardingClient({
         <div className="otop">
           <div className="obrand">
             <LogoMark />
-            Budget Mate
+            BudgetMate
           </div>
           <div className="top-right">
             <div className="account">

@@ -1,5 +1,5 @@
 ---
-name: Budget Mate
+name: BudgetMate
 description: Shared household budgeting in pesos. A calm, dark control room for the month's money.
 colors:
   vault-black: "#06110D"
@@ -127,13 +127,13 @@ components:
     padding: "10px 16px"
 ---
 
-# Design System: Budget Mate
+# Design System: BudgetMate
 
 ## Overview
 
 **Creative North Star: "Mint Mission Control"**
 
-Budget Mate is a calm control room for a household's month. The room is dark and quiet: Vault Black under a faint 32px graph-paper grid, with one or two soft green radial glows at the top edge of the page. Panels are lit readouts on that field. They separate by tone and thin lines, carry their numbers in tabular monospace, and sit still until something needs attention. Peso Green is the live signal. It marks the primary action, the selected state, the focus ring, and money that is still on plan, and almost nothing else.
+BudgetMate is a calm control room for a household's month. The room is dark and quiet: Vault Black under a faint 32px graph-paper grid, with one or two soft green radial glows at the top edge of the page. Panels are lit readouts on that field. They separate by tone and thin lines, carry their numbers in tabular monospace, and sit still until something needs attention. Peso Green is the live signal. It marks the primary action, the selected state, the focus ring, and money that is still on plan, and almost nothing else.
 
 Controls are tactile and confident. Buttons are full pills with a visible 1px border, so they read as pressable even at rest; the primary button is a solid green slab that glows on hover. Data stays precise: mono numerals, right-aligned amounts, uppercase mono labels with wide tracking. Density is that of a working tool: a full month of expenses, a chart, and three KPIs fit on one desktop screen without feeling crowded.
 

@@ -12,7 +12,7 @@ Filipino households who share bills: couples, partners, and families who plan in
 
 ## Product Purpose
 
-Budget Mate gives a household one shared tracker per month. Members plan a budgeted amount for each expense, grouped into household-wide categories, log the actual amount as they pay, and see the gap per category and for the whole month. Recurring bills carry forward from the last month with expenses, so a new month takes seconds to set up.
+BudgetMate gives a household one shared tracker per month. Members plan a budgeted amount for each expense, grouped into household-wide categories, log the actual amount as they pay, and see the gap per category and for the whole month. Recurring bills carry forward from the last month with expenses, so a new month takes seconds to set up.
 
 Success means a household plans its month together, nobody misses a bill or due date, and everyone can see at a glance where the money went compared with the plan.
 
@@ -42,9 +42,9 @@ A shared, planned, manual budget. The whole household edits one live tracker as 
 
 ## Brand Commitments
 
-- **Name:** Budget Mate.
+- **Name:** BudgetMate.
 - **Landing headline:** "Plan every peso. See where it went."
-- **Footer:** "Budget Mate · Built by First Mate", a one-line blurb, and a copyright line, linking to https://www.firstmate.tech/, on every page.
+- **Footer:** "BudgetMate · Built by First Mate", a one-line blurb, and a copyright line, linking to https://www.firstmate.tech/, on every page.
 - **Google sign-in** follows Google's branding guidelines. Its logo is never redrawn by hand.
 - **Voice:** plain, direct, and specific. Copy names the exact consequence ("This can't be undone.", "Nothing changes at your bank.") and errors say how to fix the problem.
 

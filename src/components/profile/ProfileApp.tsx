@@ -212,7 +212,7 @@ export function ProfileApp({
           </Link>
           <LogoMark />
           <div style={{ minWidth: 0 }}>
-            <div className="sub">{household ? `${household.name} · Budget tracker` : "Budget Mate"}</div>
+            <div className="sub">{household ? `${household.name} · Budget tracker` : "BudgetMate"}</div>
             <h1>Profile</h1>
           </div>
         </div>
@@ -546,7 +546,7 @@ function DeleteAccountDialog({
         <strong>This can&apos;t be undone.</strong> {snap.account.name} and its {fmtCents(snap.account.balance_cents)} balance come off your
         profile. Your total goes from {fmtCents(snap.total)} to {fmtCents(snap.total - snap.account.balance_cents)}.
       </div>
-      <p>This only removes it from Budget Mate. Nothing changes at your bank.</p>
+      <p>This only removes it from BudgetMate. Nothing changes at your bank.</p>
       <div className="modal-actions">
         <button type="button" id="acc-keep" className="btn ghost" onClick={onClose}>Keep account</button>
         <button type="button" className="btn danger" onClick={onConfirm}>Delete account</button>

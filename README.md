@@ -1,4 +1,4 @@
-# Budget Mate
+# BudgetMate
 
 A shared household budgeting app built from [docs/PRD.md](docs/PRD.md). It uses Next.js 16 (App Router, TypeScript), Tailwind CSS, and Supabase (Google auth, Postgres with RLS, and Realtime).
 

@@ -5,7 +5,7 @@ import { memberColor } from "@/lib/format";
 import { createSupabaseServer } from "@/lib/supabase/server";
 import type { Role } from "@/lib/types";
 
-export const metadata = { title: "Profile · Budget Mate" };
+export const metadata = { title: "Profile · BudgetMate" };
 
 type MembershipRow = { household_id: string; role: Role; households: { name: string } | null };
 

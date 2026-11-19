@@ -9,7 +9,7 @@ const plex = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], 
 // latin-ext carries the peso sign (U+20B1); without it ₱ falls back to a heavier system glyph next to the digits.
 const mono = JetBrains_Mono({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600"], variable: "--font-jetbrains", display: "swap" });
 
-const TITLE = "Budget Mate";
+const TITLE = "BudgetMate";
 const DESCRIPTION = "Plan every peso. Shared household budgeting with budget vs actual for every month.";
 
 // Absolute URLs for link previews (og:image etc.). Vercel sets the production

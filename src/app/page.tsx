@@ -36,7 +36,7 @@ export default async function LandingPage({ searchParams }: { searchParams: Prom
         <nav aria-label="Main">
           <div className="lbrand">
             <LogoMark />
-            Budget Mate
+            BudgetMate
           </div>
           <div className="nav-right">
             <ThemeSwitch />

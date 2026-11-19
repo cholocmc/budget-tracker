@@ -3,7 +3,7 @@ import { LOGO_PATH } from "@/components/Icons";
 
 // Link-preview card shown by Messenger, Slack, X, etc. Copy follows the
 // landing hero (PRD §6.1); colors are the dark-theme tokens in globals.css.
-export const alt = "Budget Mate — Plan every peso. See where it went.";
+export const alt = "BudgetMate — Plan every peso. See where it went.";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -48,7 +48,7 @@ const ROWS = [
 const peso = (n: number) => `₱${n.toLocaleString("en-US")}`;
 
 export default async function Image() {
-  const display = "Budget MatePlan every peso.See where it went.";
+  const display = "BudgetMatePlan every peso.See where it went.";
   const body =
     "Shared household budgeting — budget vs actual, every month.This monthBudget vs actual /" +
     ROWS.map((r) => r.name + peso(r.actual) + peso(r.budget)).join("");
@@ -94,7 +94,7 @@ export default async function Image() {
                 <path d={LOGO_PATH} fill={C.ink} />
               </svg>
             </div>
-            <div style={{ fontFamily: displayFont, fontWeight: 600, fontSize: 32 }}>Budget Mate</div>
+            <div style={{ fontFamily: displayFont, fontWeight: 600, fontSize: 32 }}>BudgetMate</div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", fontFamily: displayFont, fontWeight: 700, fontSize: 64, lineHeight: 1.08, letterSpacing: -2 }}>

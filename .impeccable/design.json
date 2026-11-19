@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-11-15T14:27:05.682Z",
-  "title": "Design System: Budget Mate",
+  "title": "Design System: BudgetMate",
   "extensions": {
     "colorMeta": {
       "peso-green": {
@@ -302,7 +302,7 @@
   ],
   "narrative": {
     "northStar": "Mint Mission Control",
-    "overview": "Budget Mate is a calm control room for a household's month. The room is dark and quiet: Vault Black under a faint 32px graph-paper grid, with one or two soft green radial glows at the top edge of the page. Panels are lit readouts on that field. They separate by tone and thin lines, carry their numbers in tabular monospace, and sit still until something needs attention. Peso Green is the live signal. It marks the primary action, the selected state, the focus ring, and money that is still on plan, and almost nothing else.\n\nControls are tactile and confident. Buttons are full pills with a visible 1px border, so they read as pressable even at rest; the primary button is a solid green slab that glows on hover. Data stays precise: mono numerals, right-aligned amounts, uppercase mono labels with wide tracking. Density is that of a working tool: a full month of expenses, a chart, and three KPIs fit on one desktop screen without feeling crowded.\n\nThe system is dark-first and flips to a light theme with the same structure: a pale mint field, white panels, and a deeper green accent. The light theme is a full theme, not an inversion afterthought. It must hold the same hierarchy and contrast.\n\nThis is not a generic bank app (no corporate navy, no stock-photo trust signals) and not a crypto or trading screen (no glow on everything, no flashing tickers, no casino energy).",
+    "overview": "BudgetMate is a calm control room for a household's month. The room is dark and quiet: Vault Black under a faint 32px graph-paper grid, with one or two soft green radial glows at the top edge of the page. Panels are lit readouts on that field. They separate by tone and thin lines, carry their numbers in tabular monospace, and sit still until something needs attention. Peso Green is the live signal. It marks the primary action, the selected state, the focus ring, and money that is still on plan, and almost nothing else.\n\nControls are tactile and confident. Buttons are full pills with a visible 1px border, so they read as pressable even at rest; the primary button is a solid green slab that glows on hover. Data stays precise: mono numerals, right-aligned amounts, uppercase mono labels with wide tracking. Density is that of a working tool: a full month of expenses, a chart, and three KPIs fit on one desktop screen without feeling crowded.\n\nThe system is dark-first and flips to a light theme with the same structure: a pale mint field, white panels, and a deeper green accent. The light theme is a full theme, not an inversion afterthought. It must hold the same hierarchy and contrast.\n\nThis is not a generic bank app (no corporate navy, no stock-photo trust signals) and not a crypto or trading screen (no glow on everything, no flashing tickers, no casino energy).",
     "keyCharacteristics": [
       "Dark-first green-black field with a faint 32px grid and soft top-edge glow.",
       "One accent, Peso Green, reserved for action, selection, focus, and on-plan money.",

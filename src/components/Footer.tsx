@@ -8,7 +8,7 @@ export function Footer({ className = "" }: { className?: string }) {
     <footer className={`site-foot ${className}`.trim()}>
       <div className="foot-brand">
         <LogoMark />
-        <span className="foot-name">Budget Mate</span>
+        <span className="foot-name">BudgetMate</span>
         <span className="foot-by">
           Built by{" "}
           <a href={FIRST_MATE} target="_blank" rel="noopener">
@@ -24,7 +24,7 @@ export function Footer({ className = "" }: { className?: string }) {
         .
       </p>
       <p className="foot-copy" suppressHydrationWarning>
-        © {new Date().getFullYear()} Budget Mate
+        © {new Date().getFullYear()} BudgetMate
       </p>
     </footer>
   );
