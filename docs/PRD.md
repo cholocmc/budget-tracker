@@ -616,8 +616,11 @@ Section headings carry no eyebrow labels; only the hero has one.
 - The switch is `role="switch"` with `aria-checked` (true means light). The thumb shows a sun or a moon.
 
 ### 6.5 Footer (all pages)
-- The text is "Made by **CholoCMC**".
-- **CholoCMC** links to `https://www.cholocmc.com` and opens in a new tab (`target="_blank" rel="noopener"`).
+- Left-aligned, three lines:
+  1. The logo, **Budget Mate**, and a muted "Built by **First Mate**".
+  2. "Free shared household budgeting app for the Philippines, built by **First Mate Technologies**."
+  3. "© {current year} Budget Mate".
+- **First Mate** and **First Mate Technologies** link to `https://www.firstmate.tech/` and open in a new tab (`target="_blank" rel="noopener"`).
 
 ### 6.6 Live sync (required)
 
@@ -909,6 +912,6 @@ There are no open questions left.
 - [ ] The chart/summary split is resizable on desktop (28–70%, default 42%), keyboard accessible, and saved.
 - [ ] Light/dark mode follows the system until toggled, is saved, and is consistent across pages.
 - [ ] The profile page lists the user's accounts with a total and supports add, edit, inline balance update, and delete. Nobody else can read those rows, and deleting a tracker or the household leaves them unchanged.
-- [ ] The "Made by CholoCMC" footer on every page links to https://www.cholocmc.com.
+- [ ] The "Built by First Mate" footer on every page links to https://www.firstmate.tech/.
 - [ ] Every page passes a mobile review at 360–400px: no horizontal scroll, stacked tables, bottom-sheet dialogs, and touch-sized targets.
 - [ ] No prototype-only scaffolding from §10 ships.

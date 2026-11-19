@@ -44,7 +44,7 @@ A shared, planned, manual budget. The whole household edits one live tracker as 
 
 - **Name:** Budget Mate.
 - **Landing headline:** "Plan every peso. See where it went."
-- **Footer:** "Made by CholoCMC", linking to https://www.cholocmc.com, on every page.
+- **Footer:** "Budget Mate · Built by First Mate", a one-line blurb, and a copyright line, linking to https://www.firstmate.tech/, on every page.
 - **Google sign-in** follows Google's branding guidelines. Its logo is never redrawn by hand.
 - **Voice:** plain, direct, and specific. Copy names the exact consequence ("This can't be undone.", "Nothing changes at your bank.") and errors say how to fix the problem.
 

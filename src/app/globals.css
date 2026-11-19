@@ -151,9 +151,16 @@ svg.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-widt
   padding: 10px 16px; border-radius: 999px; font-size: 14px; z-index: 60; box-shadow: var(--shadow); max-width: calc(100% - 32px); text-align: center; }
 
 /* Footer */
-.site-foot { text-align: center; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); padding-block: 18px 0; }
-.site-foot a { color: var(--accent-text); font-weight: 600; text-decoration: none; font-family: var(--font-mono); display: inline-block; padding: 10px 4px; margin: -10px -4px; }
+.site-foot { font-size: 14px; color: var(--muted); border-top: 1px solid var(--line); padding-block: 22px 0;
+  display: flex; flex-direction: column; gap: 12px; text-align: left; }
+.site-foot p { margin: 0; line-height: 1.55; }
+.site-foot a { color: var(--accent-text); font-weight: 600; text-decoration: none; }
 .site-foot a:hover { text-decoration: underline; }
+.foot-brand { display: flex; align-items: center; gap: 8px 10px; flex-wrap: wrap; }
+.foot-brand .logo { width: 28px; height: 28px; border-radius: 8px; box-shadow: none; }
+.foot-name { font-size: 17px; font-weight: 700; color: var(--fg); letter-spacing: -.01em; }
+.foot-by { font-size: 13px; margin-left: 6px; }
+.foot-copy { font-size: 13px; }
 
 /* Full-screen notice cards (signed out, left household) */
 .left-card { margin: 8vh auto 0; max-width: 520px; width: 100%; border: 1px solid var(--line-strong); border-radius: var(--r); background: var(--surface);
@@ -829,9 +836,7 @@ body.resizing { cursor: col-resize; user-select: none; }
   & .closing p { color: var(--muted); max-width: 48ch; }
   & .closing .cta-row { align-items: center; }
 
-  & .lfoot { padding-block: 28px 40px; text-align: center; font-size: 13px; color: var(--muted); border-top: 1px solid var(--line); margin-top: 48px; }
-  & .lfoot a { color: var(--accent-text); font-weight: 600; font-family: var(--font-mono); text-decoration: none; display: inline-block; padding: 10px 4px; margin: -10px -4px; }
-  & .lfoot a:hover { text-decoration: underline; }
+  & .lfoot { padding-block: 28px 40px; margin-top: 48px; }
 
   @media (max-width: 960px) {
     & .hero { grid-template-columns: minmax(0,1fr); gap: 40px; padding-block: 24px 48px; }
@@ -985,9 +990,7 @@ body.resizing { cursor: col-resize; user-select: none; }
   & .success .oactions { width: 100%; }
   & .code-box { border-radius: 14px; }
 
-  & .ofoot { text-align: center; font-size: 13px; color: var(--muted); padding-block: 20px 32px; }
-  & .ofoot a { color: var(--accent); font-weight: 600; font-family: var(--font-mono); text-decoration: none; }
-  & .ofoot a:hover { text-decoration: underline; }
+  & .ofoot { padding-block: 20px 32px; margin-top: 24px; }
 
   @media (max-width: 560px) {
     & .card { padding: 22px 18px; border-radius: 18px; gap: 20px; }
