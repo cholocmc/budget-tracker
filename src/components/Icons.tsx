@@ -39,17 +39,18 @@ export const IconInfo = make(<><circle cx="12" cy="12" r="9" /><path d="M12 11v6
 export const IconArrow = make(<path d="M5 12h14M13 6l6 6-6 6" />);
 export const IconSignIn = make(<><path d="M10 17l5-5-5-5" /><path d="M15 12H3" /><path d="M14 4h5a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-5" /></>);
 
-// The "B" monogram, shared by the logo tile, the link-preview card and
-// apple-icon (src/app/icon.svg inlines the same path). Drawn as a path so it
-// never depends on a font.
-export const LOGO_B_PATH =
-  "M6.5 4.5H12.6C15.2 4.5 16.7 5.9 16.7 8C16.7 9.4 16 10.5 14.8 11.2C16.4 11.7 17.6 13 17.6 14.9C17.6 17.7 15.6 19.5 12.6 19.5H6.5ZM9.5 7.2V10.4H12.2C13.2 10.4 13.8 9.8 13.8 8.8C13.8 7.8 13.2 7.2 12.2 7.2ZM9.5 12.8V16.8H12.5C13.8 16.8 14.6 16.1 14.6 14.8C14.6 13.5 13.8 12.8 12.5 12.8Z";
+// The "Slice" mark: a budget ring with the spent slice pulled out, echoing the
+// landing page's donut chart (PRD §6.1). Shared by the logo tile, the
+// link-preview card and apple-icon (src/app/icon.svg inlines the same path).
+// Drawn as filled paths so it never depends on a font or on stroke support.
+export const LOGO_PATH =
+  "M13 4.75A8.25 8.25 0 1 1 4.75 13H8.25A4.75 4.75 0 1 0 13 8.25ZM11 11V2.75A8.25 8.25 0 0 0 2.75 11Z";
 
 export function LogoMark() {
   return (
     <div className="logo" aria-hidden="true">
       <svg viewBox="0 0 24 24">
-        <path d={LOGO_B_PATH} fillRule="evenodd" />
+        <path d={LOGO_PATH} />
       </svg>
     </div>
   );

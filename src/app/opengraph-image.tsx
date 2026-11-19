@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { LOGO_B_PATH } from "@/components/Icons";
+import { LOGO_PATH } from "@/components/Icons";
 
 // Link-preview card shown by Messenger, Slack, X, etc. Copy follows the
 // landing hero (PRD §6.1); colors are the dark-theme tokens in globals.css.
@@ -91,7 +91,7 @@ export default async function Image() {
               }}
             >
               <svg width="44" height="44" viewBox="0 0 24 24">
-                <path d={LOGO_B_PATH} fill={C.ink} fillRule="evenodd" />
+                <path d={LOGO_PATH} fill={C.ink} />
               </svg>
             </div>
             <div style={{ fontFamily: displayFont, fontWeight: 600, fontSize: 32 }}>Budget Mate</div>
