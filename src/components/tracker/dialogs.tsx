@@ -95,7 +95,7 @@ function DeleteTrackerDialog({ id }: { id: string }) {
         <strong>This can&apos;t be undone.</strong>{" "}
         {impact.n ? (
           <>
-            It deletes all <b>{impact.n}</b> expense{impact.n === 1 ? "" : "s"} in {label} ({fmtCents(impact.budgeted)} budgeted,{" "}
+            It deletes {impact.n === 1 ? "the " : "all "}<b>{impact.n}</b> expense{impact.n === 1 ? "" : "s"} in {label} ({fmtCents(impact.budgeted)} budgeted,{" "}
             {fmtCents(impact.actual)} spent) for everyone in the household.
           </>
         ) : (
@@ -523,7 +523,9 @@ function CategoryDialog({ id }: { id?: string }) {
     if (id) ops.categoryImpact(id).then((i) => setCount(i?.expense_count ?? 0));
   }, [id, ops]);
 
-  const changedBy = live && original && live.updated_at !== original.updated_at && live.updated_by !== me ? live.updated_by : null;
+  // Stale when the row changed after the dialog opened: another member, or this user in another tab (PRD §6.6).
+  const stale = !!live && !!original && live.updated_at !== original.updated_at && !busy;
+  const staleBy = stale && live?.updated_by && live.updated_by !== me ? memberName(live.updated_by) : null;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -548,9 +550,9 @@ function CategoryDialog({ id }: { id?: string }) {
           ? `Categories are shared across all months.${count ? ` Changes apply to all ${plural(count, "expense")} in this category.` : ""}`
           : "The new category appears in every month."}
       </p>
-      {changedBy && live && (
+      {stale && live && (
         <div className="notice-box" role="status">
-          <span>{memberName(changedBy)} just updated this. Review the latest values before saving.</span>
+          <span>{staleBy ? `${staleBy} just updated this.` : "This was updated in another tab or on another device."} Review the latest values before saving.</span>
           <button
             type="button"
             className="link-btn"
@@ -637,7 +639,7 @@ function DeleteCategoryDialog({ id }: { id: string }) {
         {!impact
           ? "Counting the expenses in this category…"
           : n
-            ? <>Deleting this category also deletes all <b>{n}</b> expense{n === 1 ? "" : "s"} in it across <b>{impact.month_count}</b> month{impact.month_count === 1 ? "" : "s"} ({fmtCents(impact.budgeted_cents)} budgeted, {fmtCents(impact.actual_cents)} spent).</>
+            ? <>Deleting this category also deletes {n === 1 ? "the " : "all "}<b>{n}</b> expense{n === 1 ? "" : "s"} in it across <b>{impact.month_count}</b> month{impact.month_count === 1 ? "" : "s"} ({fmtCents(impact.budgeted_cents)} budgeted, {fmtCents(impact.actual_cents)} spent).</>
             : "It has no expenses, but it will be removed from every month."}
       </div>
       <form className="form" onSubmit={submit} noValidate>
@@ -697,7 +699,9 @@ function ExpenseDialog({ id }: { id?: string }) {
     setErr("");
   };
 
-  const changedBy = live && original && live.updated_at !== original.updated_at && live.updated_by !== me ? live.updated_by : null;
+  // Stale when the row changed after the dialog opened: another member, or this user in another tab (PRD §6.6).
+  const stale = !!live && !!original && live.updated_at !== original.updated_at && !busy;
+  const staleBy = stale && live?.updated_by && live.updated_by !== me ? memberName(live.updated_by) : null;
   const ownerOptions = state.members.map((m) => ({ id: m.user_id, label: m.user_id === me ? `${m.display_name} (you)` : m.display_name }));
 
   const submit = async (e: FormEvent) => {
@@ -723,9 +727,9 @@ function ExpenseDialog({ id }: { id?: string }) {
 
   return (
     <Modal title={id ? "Edit expense" : "Add expense"} onClose={close}>
-      {changedBy && live && (
+      {stale && live && (
         <div className="notice-box" role="status">
-          <span>{memberName(changedBy)} just updated this. Review the latest values before saving.</span>
+          <span>{staleBy ? `${staleBy} just updated this.` : "This was updated in another tab or on another device."} Review the latest values before saving.</span>
           <button
             type="button"
             className="link-btn"

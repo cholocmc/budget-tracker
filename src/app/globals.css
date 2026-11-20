@@ -439,7 +439,10 @@ body.resizing { cursor: col-resize; user-select: none; }
 .select { background: var(--surface-2); border: 1px solid var(--line-strong); border-radius: 999px; padding: 7px 12px; font-size: 13px; max-width: 100%; }
 .owner { display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
 .owner .av { width: 24px; height: 24px; font-size: 10px; margin: 0; border: 0; }
-.exp-name { font-weight: 500; overflow-wrap: anywhere; }
+.exp-name { font-weight: 500; overflow-wrap: break-word; }
+/* Wide table: keep names readable instead of squeezing them to a few letters; the table scrolls in its card. */
+.pg-tracker table.stack td.exp-name { min-width: 10rem; }
+.pg-tracker table.stack td.mono { white-space: nowrap; }
 
 /* List view */
 .groups { display: flex; flex-direction: column; gap: 14px; }
@@ -489,6 +492,21 @@ body.resizing { cursor: col-resize; user-select: none; }
   .kpis { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
   .split { grid-template-columns: minmax(0,1fr) !important; gap: 16px; }
   .resizer { display: none; }
+
+  /* Tables become stacked cards below 900px, not only on phones: between 641px and 900px the
+     expense table needs ~920px and squeezed names down to a few letters. Sorting moves to the dropdown. */
+  .sort-select { display: block; }
+  .pg-tracker table.stack thead { display: none; }
+  .pg-tracker table.stack, .pg-tracker table.stack tbody, .pg-tracker table.stack tfoot { display: block; }
+  .pg-tracker table.stack tr { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
+  .pg-tracker table.stack tfoot tr { border-bottom: 0; border-top: 1px solid var(--line-strong); }
+  .pg-tracker table.stack tr:hover td { background: transparent; }
+  .pg-tracker table.stack td { border: 0; padding: 3px 0; grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: right; }
+  .pg-tracker table.stack td[data-label]::before { content: attr(data-label); font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 400; text-align: left; }
+  .pg-tracker table.stack td.lead { grid-column: 1; grid-row: 1; font-weight: 600; text-align: left; padding-bottom: 6px; }
+  .pg-tracker table.stack td.act { grid-column: 2; grid-row: 1; padding: 0; }
+  .pg-tracker table.stack td.empty-cell { display: none; }
+  .pg-tracker table.stack tfoot td.lead { font-family: var(--font-display); }
 }
 
 /* Phones */
@@ -500,7 +518,9 @@ body.resizing { cursor: col-resize; user-select: none; }
   .btn .lbl { display: none; }
   .members .btn { padding: 8px 10px; }
 
-  .rail { flex-direction: column; align-items: stretch; padding: 12px; }
+  /* nowrap: a wrapping column sizes each line to its widest child, so a long chip row pushed
+     the month arrows past the card's edge. */
+  .rail { flex-direction: column; flex-wrap: nowrap; align-items: stretch; padding: 12px; }
   .month-nav { justify-content: space-between; }
   .month-label { font-size: 20px; text-align: center; }
   .tracker-chips { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
@@ -522,20 +542,7 @@ body.resizing { cursor: col-resize; user-select: none; }
   .toolbar { width: 100%; }
   .toolbar .select { flex: 1 1 100%; min-width: 0; }
   .toolbar .btn.primary { flex: 1 1 auto; min-width: 0; justify-content: center; }
-  .sort-select { display: block; }
 
-  /* Tables become stacked cards */
-  .pg-tracker table.stack thead { display: none; }
-  .pg-tracker table.stack, .pg-tracker table.stack tbody, .pg-tracker table.stack tfoot { display: block; }
-  .pg-tracker table.stack tr { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--line); }
-  .pg-tracker table.stack tfoot tr { border-bottom: 0; border-top: 1px solid var(--line-strong); }
-  .pg-tracker table.stack tr:hover td { background: transparent; }
-  .pg-tracker table.stack td { border: 0; padding: 3px 0; grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 12px; text-align: right; }
-  .pg-tracker table.stack td[data-label]::before { content: attr(data-label); font-family: var(--font-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 400; text-align: left; }
-  .pg-tracker table.stack td.lead { grid-column: 1; grid-row: 1; font-weight: 600; text-align: left; padding-bottom: 6px; }
-  .pg-tracker table.stack td.act { grid-column: 2; grid-row: 1; padding: 0; }
-  .pg-tracker table.stack td.empty-cell { display: none; }
-  .pg-tracker table.stack tfoot td.lead { font-family: var(--font-display); }
 
   /* Phones: name and meta get the full width on top (so due date, owner, and status fit on fewer lines);
      actual, what's left, and the actions share the line underneath. */
@@ -567,6 +574,12 @@ body.resizing { cursor: col-resize; user-select: none; }
 @media (pointer: coarse) {
   .icon-btn { width: 40px; height: 40px; }
   .seg button { padding: 8px 14px; }
+  /* Touch targets of at least 40px (PRD §9.4): buttons that collapse to an icon, and the color swatches. */
+  .btn { min-height: 40px; min-width: 40px; }
+  .seg button, .select { min-height: 40px; }
+  .acct-btn { min-width: 40px; min-height: 40px; align-items: center; justify-content: center; }
+  .swatches { grid-template-columns: repeat(auto-fill, 40px); }
+  .swatches button { width: 40px; height: 40px; }
 }
 
 /* Account menu: your avatar at the end of the tracker header (PRD §6.3.1) */
@@ -874,7 +887,8 @@ body.resizing { cursor: col-resize; user-select: none; }
 @container (max-width: 479px) {
   .pg-landing .pv-body { grid-template-columns: minmax(0,1fr); gap: 16px; }
   .pg-landing .pv-body svg { max-width: 200px; }
-  .pg-landing .pv-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px 16px; }
+  /* 220px fits a name plus "₱7,350 of ₱12,000" without cutting the name. */
+  .pg-landing .pv-legend { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px 16px; }
   /* Narrow card: the status pill drops under the name so the owner and due date keep their room. */
   .pg-landing .pv-bills li { grid-template-columns: 26px minmax(0,1fr) auto; row-gap: 6px; }
   .pg-landing .pv-bills .pv-av { grid-row: 1 / span 2; align-self: start; margin-top: 2px; }

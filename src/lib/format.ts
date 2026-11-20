@@ -112,11 +112,11 @@ export const fmtCents = (cents: number) => peso.format((Number(cents) || 0) / 10
 export const centsToInput = (cents: number) =>
   ((Number(cents) || 0) / 100).toLocaleString("en-PH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-/** "25,000.5" -> 2500050. Blank -> 0. NaN for anything malformed. */
+/** "25,000.5" -> 2500050. Blank (or a lone ".") -> 0. NaN for anything malformed. */
 export const inputToCents = (v: string) => {
   const s = String(v ?? "").replace(/,/g, "").trim();
-  if (s === "") return 0;
-  if (s === "." || !/^\d*(\.\d{0,2})?$/.test(s)) return NaN;
+  if (s === "" || s === ".") return 0;
+  if (!/^\d*(\.\d{0,2})?$/.test(s)) return NaN;
   const [a, b = ""] = s.split(".");
   return Number(a || "0") * 100 + Number((b + "00").slice(0, 2));
 };

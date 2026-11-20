@@ -255,7 +255,6 @@ export function OnboardingClient({
                     <input
                       id="hh-code"
                       className="code-input"
-                      maxLength={9}
                       autoComplete="off"
                       autoCapitalize="characters"
                       spellCheck={false}
@@ -270,7 +269,10 @@ export function OnboardingClient({
                       }}
                       onPaste={(e) => {
                         e.preventDefault();
-                        setCode(formatCodeInput(e.clipboardData.getData("text")));
+                        // Pick out a hyphenated code from text like "Code: K7QM-XR4D" (PRD §6.2).
+                        const text = e.clipboardData.getData("text");
+                        const found = text.toUpperCase().match(/\b[A-Z0-9]{4}-[A-Z0-9]{4}\b/)?.[0];
+                        setCode(formatCodeInput(found ?? text));
                         setError("");
                       }}
                     />

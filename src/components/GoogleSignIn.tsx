@@ -136,9 +136,11 @@ function GisButton({ initialError }: { initialError?: string | null }) {
         {phase === "loading" && <span className="gis-placeholder" aria-hidden="true" />}
         <div className="gis-slot" data-phase={phase} ref={slot} />
       </div>
-      <p className={`signin-note${state.error ? " bad" : ""}`} role="status" aria-live="polite">
-        {state.busy ? "Signing you in…" : phase === "loading" ? <span className="sr-only">Loading Google sign-in…</span> : state.error}
+      <p className="signin-note" role="status" aria-live="polite">
+        {state.busy ? "Signing you in…" : phase === "loading" ? <span className="sr-only">Loading Google sign-in…</span> : null}
       </p>
+      {/* Errors use role="alert" (PRD §9.5). */}
+      <p className="signin-note bad" role="alert">{state.busy ? null : state.error}</p>
     </>
   );
 }
@@ -175,9 +177,7 @@ function OAuthButton({ initialError }: { initialError?: string | null }) {
           <span className="spin" aria-hidden="true" />
         </button>
       </div>
-      <p className={`signin-note${error ? " bad" : ""}`} role="status" aria-live="polite">
-        {error}
-      </p>
+      <p className="signin-note bad" role="alert">{error}</p>
     </>
   );
 }
